@@ -1,0 +1,5 @@
+curl -X POST http://localhost:4000/api/admin/promote-admin \
+  -H "Authorization: Bearer <admin-token>" \
+  -H "x-super-admin-key: your-secret-key" \
+  -H "Content-Type: application/json" \
+  -d '{"user_id": "user-uuid-here"}'
