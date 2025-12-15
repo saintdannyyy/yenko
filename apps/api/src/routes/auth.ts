@@ -528,6 +528,64 @@ authRouter.post('/logout', (_req: Request, res: Response) => {
 })
 
 /**
+ * Update user profile
+ * PATCH /api/auth/profile
+ */
+authRouter.patch('/profile', verifyToken, async (req: AuthRequest, res: Response) => {
+  try {
+    const userId = req.userId
+    const { full_name, profile_photo } = req.body
+
+    // Build update object with only provided fields
+    const updateData: Record<string, any> = {}
+    if (full_name !== undefined) updateData.full_name = full_name
+    if (profile_photo !== undefined) updateData.profile_photo = profile_photo
+
+    if (Object.keys(updateData).length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'No fields to update',
+      })
+    }
+
+    const { error } = await supabaseAdmin
+      .from('profiles')
+      .update(updateData)
+      .eq('id', userId)
+
+    if (error) {
+      return res.status(400).json({
+        success: false,
+        message: error.message,
+      })
+    }
+
+    // Fetch updated profile
+    const { data: profile } = await supabaseAdmin
+      .from('profiles')
+      .select('*')
+      .eq('id', userId)
+      .single()
+
+    res.json({
+      success: true,
+      message: 'Profile updated successfully',
+      user: {
+        id: userId,
+        phone: profile?.phone,
+        full_name: profile?.full_name,
+        role: profile?.role,
+        profile_photo: profile?.profile_photo,
+        rating: profile?.rating,
+      },
+    })
+  } catch (error) {
+    console.error('Update profile error:', error)
+    res.status(500).json({ success: false, message: 'Profile update failed' })
+  }
+})
+
+/**
  * Helper: Determine onboarding status
  */
 interface OnboardingStatus {
@@ -543,6 +601,15 @@ function getOnboardingStatus(profile: any, driver?: any): OnboardingStatus {
       isComplete: false,
       nextStep: 'profile',
       redirectTo: '/onboard/profile',
+    }
+  }
+
+  // Admin users are always complete
+  if (profile?.role === 'admin') {
+    return {
+      isComplete: true,
+      nextStep: 'complete',
+      redirectTo: '/admin',
     }
   }
 

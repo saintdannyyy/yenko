@@ -6,6 +6,7 @@ CREATE TABLE IF NOT EXISTS profiles (
   role TEXT CHECK (role IN ('driver','passenger','admin')) DEFAULT 'passenger',
   profile_photo TEXT,
   rating NUMERIC DEFAULT 5.0,
+  suspended BOOLEAN DEFAULT false,
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
