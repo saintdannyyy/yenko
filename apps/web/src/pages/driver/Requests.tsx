@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/button";
-import { Card } from "@/components/card";
-import { MapPin, Users, Clock, CheckCircle } from "lucide-react";
+import { AppHeader } from "@/components/app-header";
+import { MapPin, Users, Clock, Check } from "lucide-react";
 import { toast } from "sonner";
 
 interface Request {
@@ -65,111 +65,114 @@ export default function DriverRequests() {
   };
 
   return (
-    <div className="min-h-screen bg-yenko-bg py-8 px-4">
-      <div className="max-w-2xl mx-auto">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-yenko-deep mb-2">
-            Incoming Requests
-          </h1>
-          <p className="text-yenko-muted">{requests.length} new requests</p>
-        </div>
+    <div className="min-h-screen bg-yenko-bgSecondary">
+      <AppHeader />
 
-        {/* Requests List */}
+      {/* Page Header */}
+      <div className="bg-white border-b border-yenko-separator px-4 py-6">
+        <div className="max-w-lg mx-auto">
+          <h1 className="text-title-md text-yenko-label">Incoming Requests</h1>
+          <p className="text-callout text-yenko-secondary mt-1">
+            {requests.length} new{" "}
+            {requests.length === 1 ? "request" : "requests"}
+          </p>
+        </div>
+      </div>
+
+      <div className="max-w-lg mx-auto px-4 py-6">
         {loading ? (
-          <Card className="p-8 text-center text-yenko-muted">
-            Loading requests...
-          </Card>
+          <div className="bg-white rounded-2xl p-8 text-center shadow-apple">
+            <p className="text-body text-yenko-secondary">
+              Loading requests...
+            </p>
+          </div>
         ) : requests.length === 0 ? (
-          <Card className="p-8 text-center">
-            <p className="text-yenko-muted mb-4">
+          <div className="bg-white rounded-2xl p-8 text-center shadow-apple">
+            <p className="text-body text-yenko-secondary mb-4">
               No incoming requests at the moment
             </p>
             <Link to="/driver/direction">
-              <Button className="bg-yenko-blue hover:bg-yenko-deep text-white">
+              <Button className="bg-yenko-blue hover:bg-yenko-blue/90 text-white rounded-xl h-12 px-6 text-body font-medium shadow-apple transition-apple">
                 Post Another Route
               </Button>
             </Link>
-          </Card>
+          </div>
         ) : (
           <div className="space-y-4">
             {requests.map((request) => (
-              <Card key={request.id} className="p-4 hover:shadow-lg transition">
-                <div className="flex justify-between items-start mb-4">
+              <div
+                key={request.id}
+                className="bg-white rounded-2xl shadow-apple overflow-hidden transition-apple hover:shadow-apple-md"
+              >
+                {/* Header */}
+                <div className="p-4 flex justify-between items-start">
                   <div>
-                    <h3 className="font-bold text-yenko-deep">
+                    <h3 className="text-headline text-yenko-label">
                       {request.passenger_name}
                     </h3>
-                    <div className="flex items-center gap-1 text-sm text-yenko-muted">
+                    <div className="flex items-center gap-1 text-footnote text-yenko-secondary">
                       <span>⭐ {request.passenger_rating.toFixed(1)}</span>
                     </div>
                   </div>
                   <div className="text-right">
-                    <div className="text-2xl font-bold text-yenko-blue">
+                    <div className="text-title-md text-yenko-blue font-semibold">
                       ₵{request.offer_price.toFixed(2)}
                     </div>
-                    <p className="text-xs text-yenko-muted">Total offer</p>
+                    <p className="text-caption text-yenko-muted">Total offer</p>
                   </div>
                 </div>
 
-                <div className="space-y-2 mb-4 text-sm">
-                  <div className="flex gap-2">
-                    <MapPin className="w-4 h-4 text-yenko-blue flex-shrink-0 mt-0.5" />
+                {/* Route Details */}
+                <div className="px-4 pb-4 space-y-3">
+                  <div className="flex gap-3">
+                    <div className="w-8 h-8 bg-yenko-blue/10 rounded-full flex items-center justify-center flex-shrink-0">
+                      <MapPin className="w-4 h-4 text-yenko-blue" />
+                    </div>
                     <div>
-                      <p className="text-yenko-muted">From</p>
-                      <p className="font-medium text-yenko-deep">
+                      <p className="text-caption text-yenko-muted">From</p>
+                      <p className="text-subheadline text-yenko-label">
                         {request.pickup}
                       </p>
                     </div>
                   </div>
-                  <div className="flex gap-2">
-                    <MapPin className="w-4 h-4 text-yenko-blue flex-shrink-0 mt-0.5" />
+                  <div className="flex gap-3">
+                    <div className="w-8 h-8 bg-yenko-success/10 rounded-full flex items-center justify-center flex-shrink-0">
+                      <MapPin className="w-4 h-4 text-yenko-success" />
+                    </div>
                     <div>
-                      <p className="text-yenko-muted">To</p>
-                      <p className="font-medium text-yenko-deep">
+                      <p className="text-caption text-yenko-muted">To</p>
+                      <p className="text-subheadline text-yenko-label">
                         {request.destination}
                       </p>
                     </div>
                   </div>
-                  <div className="flex gap-2 pt-2 border-t border-yenko-muted">
-                    <Users className="w-4 h-4 text-yenko-muted flex-shrink-0 mt-0.5" />
-                    <span className="text-yenko-muted">
-                      {request.seats_needed} passenger(s)
-                    </span>
-                  </div>
-                  <div className="flex gap-2">
-                    <Clock className="w-4 h-4 text-yenko-muted flex-shrink-0 mt-0.5" />
-                    <span className="text-yenko-muted">
-                      {request.scheduled_time}
-                    </span>
+
+                  <div className="flex gap-4 pt-2 border-t border-yenko-separator">
+                    <div className="flex items-center gap-2 text-footnote text-yenko-secondary">
+                      <Users className="w-4 h-4" />
+                      <span>{request.seats_needed} passenger(s)</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-footnote text-yenko-secondary">
+                      <Clock className="w-4 h-4" />
+                      <span>{request.scheduled_time}</span>
+                    </div>
                   </div>
                 </div>
 
-                <Button
-                  onClick={() => handleAccept(request.id)}
-                  className="w-full bg-yenko-blue hover:bg-yenko-deep text-white"
-                >
-                  <CheckCircle className="w-4 h-4 mr-2" />
-                  Accept Ride
-                </Button>
-              </Card>
+                {/* Action */}
+                <div className="p-4 border-t border-yenko-separator">
+                  <Button
+                    onClick={() => handleAccept(request.id)}
+                    className="w-full h-12 bg-yenko-blue hover:bg-yenko-blue/90 text-white text-body font-semibold rounded-xl shadow-apple transition-apple"
+                  >
+                    <Check className="w-5 h-5 mr-2" />
+                    Accept Ride
+                  </Button>
+                </div>
+              </div>
             ))}
           </div>
         )}
-
-        {/* Bottom Navigation */}
-        <div className="sticky bottom-4 left-4 right-4 max-w-[calc(100%-2rem)] mx-auto flex gap-3 mt-8">
-          <Link to="/driver/earnings" className="flex-1">
-            <Button variant="outline" className="w-full">
-              View Earnings
-            </Button>
-          </Link>
-          <Link to="/driver/direction" className="flex-1">
-            <Button className="w-full bg-yenko-yellow text-yenko-deep hover:bg-yenko-yellow/90">
-              Post Route
-            </Button>
-          </Link>
-        </div>
       </div>
     </div>
   );

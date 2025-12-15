@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
+import { useAuthStore } from "@/store/authStore";
 import { Card } from "@/components/card";
 import { Button } from "@/components/button";
 import { Star, Users, Wind, Music } from "lucide-react";
@@ -25,11 +26,17 @@ interface Driver {
 export default function PassengerDrivers() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const token = useAuthStore((s) => s.token);
   const [drivers, setDrivers] = useState<Driver[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchDrivers = async () => {
+      if (!token) {
+        navigate("/auth/login");
+        return;
+      }
+
       setLoading(true);
       try {
         const pickup = searchParams.get("pickup");
@@ -38,6 +45,9 @@ export default function PassengerDrivers() {
 
         const response = await fetch(
           `/api/passenger/drivers?pickup=${pickup}&destination=${destination}&rideType=${rideType}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          },
         );
         if (response.ok) {
           const data = await response.json();
@@ -51,7 +61,7 @@ export default function PassengerDrivers() {
     };
 
     fetchDrivers();
-  }, [searchParams]);
+  }, [searchParams, token, navigate]);
 
   return (
     <div className="min-h-screen bg-yenko-bg">

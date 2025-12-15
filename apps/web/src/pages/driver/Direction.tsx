@@ -2,8 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/button";
 import { Input } from "@/components/input";
-import { Card } from "@/components/card";
-import { MapPin, Clock } from "lucide-react";
+import { MapPin, Clock, ChevronLeft, Info } from "lucide-react";
 import { toast } from "sonner";
 
 export default function DriverDirection() {
@@ -50,23 +49,36 @@ export default function DriverDirection() {
   };
 
   return (
-    <div className="min-h-screen bg-yenko-bg py-8 px-4">
-      <div className="max-w-2xl mx-auto">
-        <h1 className="text-3xl font-bold text-yenko-deep mb-2">
-          Post Your Route
-        </h1>
-        <p className="text-yenko-muted mb-8">
+    <div className="min-h-screen bg-yenko-bgSecondary">
+      {/* Header */}
+      <header className="bg-white border-b border-yenko-separator px-4 h-14 flex items-center gap-3">
+        <button
+          onClick={() => navigate(-1)}
+          className="w-9 h-9 flex items-center justify-center rounded-full hover:bg-yenko-bgSecondary transition-apple"
+        >
+          <ChevronLeft className="w-6 h-6 text-yenko-blue" />
+        </button>
+        <h1 className="text-headline text-yenko-label">Post Your Route</h1>
+      </header>
+
+      <div className="max-w-lg mx-auto px-4 py-6">
+        <p className="text-callout text-yenko-secondary mb-6">
           Share where you're going and start earning
         </p>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Route Information */}
-          <Card className="p-6">
-            <h2 className="font-bold text-yenko-deep mb-4">Route Details</h2>
-            <div className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4">
+          {/* Route Card */}
+          <div className="bg-white rounded-2xl shadow-apple overflow-hidden">
+            <div className="p-4 border-b border-yenko-separator">
+              <h2 className="text-subheadline font-semibold text-yenko-label">
+                Route Details
+              </h2>
+            </div>
+
+            <div className="p-4 space-y-4">
               <div>
-                <label className="flex items-center gap-2 text-sm font-medium text-yenko-ink mb-2">
-                  <MapPin className="w-4 h-4" />
+                <label className="flex items-center gap-2 text-footnote font-medium text-yenko-secondary mb-2">
+                  <MapPin className="w-4 h-4 text-yenko-blue" />
                   Starting Location
                 </label>
                 <Input
@@ -77,12 +89,13 @@ export default function DriverDirection() {
                     setFormData({ ...formData, start_location: e.target.value })
                   }
                   required
+                  className="h-12 bg-yenko-bgSecondary border-yenko-separator rounded-xl px-4 text-body focus:ring-2 focus:ring-yenko-blue/20 focus:border-yenko-blue transition-apple"
                 />
               </div>
 
               <div>
-                <label className="flex items-center gap-2 text-sm font-medium text-yenko-ink mb-2">
-                  <MapPin className="w-4 h-4" />
+                <label className="flex items-center gap-2 text-footnote font-medium text-yenko-secondary mb-2">
+                  <MapPin className="w-4 h-4 text-yenko-blue" />
                   Destination
                 </label>
                 <Input
@@ -93,12 +106,13 @@ export default function DriverDirection() {
                     setFormData({ ...formData, end_location: e.target.value })
                   }
                   required
+                  className="h-12 bg-yenko-bgSecondary border-yenko-separator rounded-xl px-4 text-body focus:ring-2 focus:ring-yenko-blue/20 focus:border-yenko-blue transition-apple"
                 />
               </div>
 
               <div>
-                <label className="flex items-center gap-2 text-sm font-medium text-yenko-ink mb-2">
-                  <Clock className="w-4 h-4" />
+                <label className="flex items-center gap-2 text-footnote font-medium text-yenko-secondary mb-2">
+                  <Clock className="w-4 h-4 text-yenko-blue" />
                   Departure Time
                 </label>
                 <Input
@@ -108,12 +122,13 @@ export default function DriverDirection() {
                     setFormData({ ...formData, departure_time: e.target.value })
                   }
                   required
+                  className="h-12 bg-yenko-bgSecondary border-yenko-separator rounded-xl px-4 text-body focus:ring-2 focus:ring-yenko-blue/20 focus:border-yenko-blue transition-apple"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-yenko-ink mb-2">
-                  Available Seats for This Trip
+                <label className="text-footnote font-medium text-yenko-secondary mb-2 block">
+                  Available Seats
                 </label>
                 <select
                   value={formData.seats}
@@ -123,7 +138,7 @@ export default function DriverDirection() {
                       seats: parseInt(e.target.value),
                     })
                   }
-                  className="w-full px-3 py-2 border border-yenko-muted rounded-md"
+                  className="w-full h-12 bg-yenko-bgSecondary border border-yenko-separator rounded-xl px-4 text-body text-yenko-label focus:ring-2 focus:ring-yenko-blue/20 focus:border-yenko-blue transition-apple appearance-none"
                 >
                   {[1, 2, 3, 4, 5, 6, 7, 8].map((n) => (
                     <option key={n} value={n}>
@@ -133,33 +148,26 @@ export default function DriverDirection() {
                 </select>
               </div>
             </div>
-          </Card>
-
-          {/* Info Card */}
-          <Card className="p-4 bg-blue-50 border-blue-200">
-            <p className="text-sm text-blue-800">
-              <strong>Tip:</strong> The more detailed your route information,
-              the better we can match you with passengers going the same way!
-            </p>
-          </Card>
-
-          <div className="flex gap-3">
-            <Button
-              type="button"
-              variant="outline"
-              className="flex-1"
-              onClick={() => navigate("/driver/register")}
-            >
-              Back
-            </Button>
-            <Button
-              type="submit"
-              disabled={loading}
-              className="flex-1 bg-yenko-blue hover:bg-yenko-deep text-white"
-            >
-              {loading ? "Posting..." : "Post Route"}
-            </Button>
           </div>
+
+          {/* Tip Card */}
+          <div className="bg-yenko-blue/5 rounded-2xl p-4 flex gap-3">
+            <Info className="w-5 h-5 text-yenko-blue flex-shrink-0 mt-0.5" />
+            <p className="text-callout text-yenko-secondary">
+              <span className="font-medium text-yenko-label">Tip:</span> The
+              more detailed your route information, the better we can match you
+              with passengers going the same way!
+            </p>
+          </div>
+
+          {/* Submit Button */}
+          <Button
+            type="submit"
+            disabled={loading}
+            className="w-full h-14 bg-yenko-blue hover:bg-yenko-blue/90 text-white text-body font-semibold rounded-xl shadow-apple transition-apple disabled:opacity-50"
+          >
+            {loading ? "Posting..." : "Post Route"}
+          </Button>
         </form>
       </div>
     </div>

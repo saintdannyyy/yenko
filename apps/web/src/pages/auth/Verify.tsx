@@ -1,14 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation, Link } from "react-router-dom";
 import { Button } from "@/components/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/card";
-import { ArrowLeft, Loader2, RefreshCw } from "lucide-react";
+import { ArrowLeft, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { authApi } from "@/lib/api";
 import { useAuthStore } from "@/store/authStore";
@@ -20,7 +13,12 @@ export default function Verify() {
   const location = useLocation();
   const setAuth = useAuthStore((s) => s.setAuth);
 
-  // Get phone from navigation state
+  // Use proper selectors for reactivity
+  const token = useAuthStore((s) => s.token);
+  const user = useAuthStore((s) => s.user);
+  const onboardingStatus = useAuthStore((s) => s.onboardingStatus);
+
+  // Get phone and isNewUser from navigation state
   const phone = location.state?.phone as string;
   const isNewUser = location.state?.isNewUser as boolean;
 
@@ -28,14 +26,15 @@ export default function Verify() {
   const [loading, setLoading] = useState(false);
   const [resendLoading, setResendLoading] = useState(false);
   const [countdown, setCountdown] = useState(30);
+  const [verified, setVerified] = useState(false);
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
-  // Redirect if no phone
+  // Redirect if no phone (and not just verified)
   useEffect(() => {
-    if (!phone) {
+    if (!phone && !verified && !token) {
       navigate("/auth/login", { replace: true });
     }
-  }, [phone, navigate]);
+  }, [phone, verified, token, navigate]);
 
   // Countdown timer for resend
   useEffect(() => {
@@ -100,6 +99,9 @@ export default function Verify() {
       const response = await authApi.verifyOtp(phone, otpCode);
 
       if (response.success) {
+        // Mark as verified to prevent redirect loops
+        setVerified(true);
+
         // Store auth data
         setAuth({
           token: response.token,
@@ -109,8 +111,10 @@ export default function Verify() {
 
         toast.success(response.message);
 
-        // Navigate based on onboarding status
-        navigate(response.onboardingStatus.redirectTo, { replace: true });
+        // Small delay to ensure state is persisted before navigation
+        setTimeout(() => {
+          navigate(response.onboardingStatus.redirectTo, { replace: true });
+        }, 100);
       }
     } catch (error: any) {
       toast.error(error.message || "Verification failed");
@@ -151,97 +155,89 @@ export default function Verify() {
   if (!phone) return null;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-yenko-blue to-yenko-deep flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
-        {/* Back button */}
+    <div className="min-h-screen bg-yenko-bgSecondary flex flex-col">
+      {/* Navigation */}
+      <nav className="p-4">
         <Link
           to="/auth/login"
-          className="inline-flex items-center text-white/80 hover:text-white mb-6 transition-colors"
+          className="inline-flex items-center text-yenko-blue hover:text-yenko-blue/80 transition-apple text-body font-medium"
         >
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          Change number
+          <ArrowLeft className="w-5 h-5 mr-1" />
+          Back
         </Link>
+      </nav>
 
-        <Card className="border-0 shadow-2xl">
-          <CardHeader className="text-center pb-2">
-            <CardTitle className="text-2xl font-bold text-yenko-deep">
-              Verify Your Number
-            </CardTitle>
-            <CardDescription className="text-yenko-muted">
-              We sent a 6-digit code to{" "}
-              <span className="font-semibold text-yenko-ink">{phone}</span>
-            </CardDescription>
-          </CardHeader>
+      {/* Content */}
+      <div className="flex-1 flex items-center justify-center px-6 pb-12">
+        <div className="w-full max-w-sm">
+          {/* Header */}
+          <div className="text-center mb-10">
+            <h1 className="text-title-md text-yenko-label mb-2">
+              Enter verification code
+            </h1>
+            <p className="text-body text-yenko-muted">
+              Sent to{" "}
+              <span className="text-yenko-label font-medium">{phone}</span>
+            </p>
+          </div>
 
-          <CardContent>
-            <div className="space-y-6">
-              {/* OTP Input */}
-              <div className="flex justify-center gap-2" onPaste={handlePaste}>
-                {otp.map((digit, index) => (
-                  <input
-                    key={index}
-                    ref={(el) => (inputRefs.current[index] = el)}
-                    type="text"
-                    inputMode="numeric"
-                    maxLength={1}
-                    value={digit}
-                    onChange={(e) => handleChange(index, e.target.value)}
-                    onKeyDown={(e) => handleKeyDown(index, e)}
-                    disabled={loading}
-                    className="w-12 h-14 text-center text-2xl font-bold border-2 rounded-lg
-                      focus:border-yenko-blue focus:ring-2 focus:ring-yenko-blue/20 outline-none
-                      disabled:opacity-50 disabled:cursor-not-allowed
-                      transition-all"
-                  />
-                ))}
-              </div>
-
-              {/* Loading state */}
-              {loading && (
-                <div className="flex items-center justify-center text-yenko-muted">
-                  <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                  Verifying...
-                </div>
-              )}
-
-              {/* Resend button */}
-              <div className="text-center">
-                <Button
-                  type="button"
-                  variant="ghost"
-                  disabled={countdown > 0 || resendLoading}
-                  onClick={handleResend}
-                  className="text-yenko-blue hover:text-yenko-deep"
-                >
-                  {resendLoading ? (
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  ) : (
-                    <RefreshCw className="w-4 h-4 mr-2" />
-                  )}
-                  {countdown > 0 ? `Resend in ${countdown}s` : "Resend Code"}
-                </Button>
-              </div>
-
-              {/* New user info */}
-              {isNewUser && (
-                <div className="bg-yenko-blue/5 border border-yenko-blue/20 rounded-lg p-4 text-center">
-                  <p className="text-sm text-yenko-muted">
-                    👋 Looks like you're new here! After verification, we'll
-                    help you set up your profile.
-                  </p>
-                </div>
-              )}
+          {/* OTP Input */}
+          <div className="space-y-8">
+            <div className="flex justify-center gap-3" onPaste={handlePaste}>
+              {otp.map((digit, index) => (
+                <input
+                  key={index}
+                  ref={(el) => (inputRefs.current[index] = el)}
+                  type="text"
+                  inputMode="numeric"
+                  maxLength={1}
+                  value={digit}
+                  onChange={(e) => handleChange(index, e.target.value)}
+                  onKeyDown={(e) => handleKeyDown(index, e)}
+                  disabled={loading}
+                  className="w-12 h-14 text-center text-title-sm bg-white border border-yenko-separator rounded-xl
+                    focus:border-yenko-blue focus:ring-2 focus:ring-yenko-blue/20 outline-none
+                    disabled:opacity-40 disabled:cursor-not-allowed
+                    transition-apple"
+                />
+              ))}
             </div>
-          </CardContent>
-        </Card>
 
-        {/* Help text */}
-        <p className="text-center text-white/60 text-sm mt-6">
-          Didn't receive the code?{" "}
-          <Link to="/help" className="text-white hover:underline">
-            Get help
-          </Link>
-        </p>
+            {/* Loading state */}
+            {loading && (
+              <div className="flex items-center justify-center text-yenko-muted">
+                <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                <span className="text-body">Verifying...</span>
+              </div>
+            )}
+
+            {/* Resend button */}
+            <div className="text-center">
+              <Button
+                type="button"
+                variant="ghost"
+                disabled={countdown > 0 || resendLoading}
+                onClick={handleResend}
+                className="text-yenko-blue hover:text-yenko-blue/80 text-body font-medium transition-apple disabled:text-yenko-muted"
+              >
+                {resendLoading ? (
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                ) : null}
+                {countdown > 0 ? `Resend code in ${countdown}s` : "Resend code"}
+              </Button>
+            </div>
+
+            {/* New user info */}
+            {isNewUser && (
+              <div className="bg-white border border-yenko-separator rounded-2xl p-4 text-center">
+                <p className="text-subheadline text-yenko-secondary">
+                  👋 Welcome! After verification, we'll help you set up your
+                  profile.
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );

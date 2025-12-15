@@ -1,7 +1,13 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/button";
-import { Card } from "@/components/card";
-import { MapPin, Phone, AlertCircle, CheckCircle2 } from "lucide-react";
+import {
+  MapPin,
+  Phone,
+  MessageCircle,
+  ChevronLeft,
+  Play,
+  CheckCircle,
+} from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -64,107 +70,178 @@ export default function DriverTripControl() {
     }
   };
 
+  const getStatusColor = () => {
+    switch (tripStatus) {
+      case "started":
+        return "text-yenko-warning";
+      case "completed":
+        return "text-yenko-success";
+      default:
+        return "text-yenko-blue";
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-yenko-bg pb-32">
-      <div className="max-w-2xl mx-auto p-4">
-        {/* Header */}
-        <div className="mb-6">
-          <Button variant="outline" onClick={() => navigate(-1)}>
-            ← Back
-          </Button>
-          <h1 className="text-2xl font-bold text-yenko-deep mt-4 mb-2">
+    <div className="min-h-screen bg-yenko-bgSecondary pb-32">
+      {/* Header */}
+      <header className="bg-white border-b border-yenko-separator px-4 h-14 flex items-center gap-3">
+        <button
+          onClick={() => navigate(-1)}
+          className="w-9 h-9 flex items-center justify-center rounded-full hover:bg-yenko-bgSecondary transition-apple"
+        >
+          <ChevronLeft className="w-6 h-6 text-yenko-blue" />
+        </button>
+        <div>
+          <h1 className="text-headline text-yenko-label">
             Trip #{tripId?.slice(0, 8)}
           </h1>
-          <p className="text-yenko-muted">
-            Trip Code:{" "}
-            <strong className="text-yenko-deep font-mono">8A2K</strong>
+          <p className="text-caption text-yenko-muted">
+            Code:{" "}
+            <span className="font-mono font-medium text-yenko-label">8A2K</span>
           </p>
         </div>
+      </header>
 
-        {/* Status */}
-        <Card className="p-6 mb-6 border-l-4 border-l-yenko-blue">
-          <h2 className="font-bold text-yenko-deep mb-2">Trip Status</h2>
-          <p className="text-lg font-semibold text-yenko-blue capitalize">
-            {tripStatus.replace("_", " ")}
-          </p>
-        </Card>
-
-        {/* Passenger Info */}
-        <Card className="p-6 mb-6">
-          <h2 className="font-bold text-yenko-deep mb-4">Passenger Details</h2>
-          <div className="flex justify-between items-start mb-4">
-            <div>
-              <p className="font-medium text-yenko-deep">Jane Doe</p>
-              <p className="text-sm text-yenko-muted">Verified Passenger</p>
-            </div>
-            <div className="text-right">
-              <div className="text-lg">⭐ 4.9</div>
-              <p className="text-xs text-yenko-muted">312 rides</p>
-            </div>
+      <div className="max-w-lg mx-auto px-4 py-6 space-y-4">
+        {/* Status Card */}
+        <div className="bg-white rounded-2xl shadow-apple overflow-hidden">
+          <div className="p-4 border-b border-yenko-separator">
+            <h2 className="text-subheadline font-semibold text-yenko-label">
+              Trip Status
+            </h2>
           </div>
-          <div className="flex gap-3">
-            <Button variant="outline" className="flex-1">
-              <Phone className="w-4 h-4 mr-2" />
-              Call
-            </Button>
-            <Button variant="outline" className="flex-1">
-              💬 Message
-            </Button>
+          <div className="p-4">
+            <p
+              className={`text-headline font-semibold capitalize ${getStatusColor()}`}
+            >
+              {tripStatus.replace("_", " ")}
+            </p>
           </div>
-        </Card>
+        </div>
 
-        {/* Route Info */}
-        <Card className="p-6 mb-6">
-          <h2 className="font-bold text-yenko-deep mb-4">Route Information</h2>
-          <div className="space-y-4">
-            <div className="flex gap-4">
-              <MapPin className="w-5 h-5 text-yenko-blue flex-shrink-0 mt-1" />
+        {/* Passenger Card */}
+        <div className="bg-white rounded-2xl shadow-apple overflow-hidden">
+          <div className="p-4 border-b border-yenko-separator">
+            <h2 className="text-subheadline font-semibold text-yenko-label">
+              Passenger Details
+            </h2>
+          </div>
+          <div className="p-4">
+            <div className="flex justify-between items-start mb-4">
               <div>
-                <p className="text-sm text-yenko-muted">From</p>
-                <p className="font-medium text-yenko-deep">Osu, Accra</p>
+                <p className="text-headline text-yenko-label">Jane Doe</p>
+                <p className="text-footnote text-yenko-secondary">
+                  Verified Passenger
+                </p>
+              </div>
+              <div className="text-right">
+                <div className="text-subheadline font-medium text-yenko-label">
+                  ⭐ 4.9
+                </div>
+                <p className="text-caption text-yenko-muted">312 rides</p>
               </div>
             </div>
-            <div className="h-12 border-l-2 border-dashed border-yenko-blue ml-2.5" />
-            <div className="flex gap-4">
-              <MapPin className="w-5 h-5 text-yenko-blue flex-shrink-0 mt-1" />
-              <div>
-                <p className="text-sm text-yenko-muted">To</p>
-                <p className="font-medium text-yenko-deep">Tema, Accra</p>
+            <div className="flex gap-3">
+              <Button
+                variant="outline"
+                className="flex-1 h-11 border-yenko-separator text-yenko-label hover:bg-yenko-bgSecondary rounded-xl text-subheadline font-medium transition-apple"
+              >
+                <Phone className="w-4 h-4 mr-2" />
+                Call
+              </Button>
+              <Button
+                variant="outline"
+                className="flex-1 h-11 border-yenko-separator text-yenko-label hover:bg-yenko-bgSecondary rounded-xl text-subheadline font-medium transition-apple"
+              >
+                <MessageCircle className="w-4 h-4 mr-2" />
+                Message
+              </Button>
+            </div>
+          </div>
+        </div>
+
+        {/* Route Card */}
+        <div className="bg-white rounded-2xl shadow-apple overflow-hidden">
+          <div className="p-4 border-b border-yenko-separator">
+            <h2 className="text-subheadline font-semibold text-yenko-label">
+              Route Information
+            </h2>
+          </div>
+          <div className="p-4">
+            <div className="flex gap-4 mb-4">
+              <div className="flex flex-col items-center">
+                <div className="w-8 h-8 bg-yenko-blue/10 rounded-full flex items-center justify-center">
+                  <MapPin className="w-4 h-4 text-yenko-blue" />
+                </div>
+                <div className="flex-1 w-0.5 bg-yenko-separator my-2 min-h-[40px]" />
+                <div className="w-8 h-8 bg-yenko-success/10 rounded-full flex items-center justify-center">
+                  <MapPin className="w-4 h-4 text-yenko-success" />
+                </div>
+              </div>
+              <div className="flex-1 space-y-6">
+                <div>
+                  <p className="text-caption text-yenko-muted">From</p>
+                  <p className="text-subheadline text-yenko-label">
+                    Osu, Accra
+                  </p>
+                </div>
+                <div>
+                  <p className="text-caption text-yenko-muted">To</p>
+                  <p className="text-subheadline text-yenko-label">
+                    Tema, Accra
+                  </p>
+                </div>
               </div>
             </div>
           </div>
-        </Card>
+        </div>
 
-        {/* Payment Info */}
-        <Card className="p-6 mb-6">
-          <h2 className="font-bold text-yenko-deep mb-4">
-            Payment Information
-          </h2>
-          <div className="space-y-2 text-sm">
+        {/* Payment Card */}
+        <div className="bg-white rounded-2xl shadow-apple overflow-hidden">
+          <div className="p-4 border-b border-yenko-separator">
+            <h2 className="text-subheadline font-semibold text-yenko-label">
+              Payment Information
+            </h2>
+          </div>
+          <div className="p-4 space-y-3">
             <div className="flex justify-between">
-              <span className="text-yenko-muted">Total Fare</span>
-              <span className="font-medium">₵27.00</span>
+              <span className="text-callout text-yenko-secondary">
+                Total Fare
+              </span>
+              <span className="text-callout font-medium text-yenko-label">
+                ₵27.00
+              </span>
             </div>
             <div className="flex justify-between">
-              <span className="text-yenko-muted">Commission (12%)</span>
-              <span className="font-medium">₵3.24</span>
+              <span className="text-callout text-yenko-secondary">
+                Commission (12%)
+              </span>
+              <span className="text-callout font-medium text-yenko-label">
+                ₵3.24
+              </span>
             </div>
-            <div className="border-t border-yenko-muted pt-2 flex justify-between font-bold">
-              <span>Your Earning</span>
-              <span className="text-yenko-success">₵23.76</span>
+            <div className="border-t border-yenko-separator pt-3 flex justify-between">
+              <span className="text-subheadline font-semibold text-yenko-label">
+                Your Earning
+              </span>
+              <span className="text-subheadline font-semibold text-yenko-success">
+                ₵23.76
+              </span>
             </div>
           </div>
-        </Card>
+        </div>
+      </div>
 
-        {/* Control Buttons */}
-        <div className="fixed bottom-4 left-4 right-4 max-w-[calc(100%-2rem)] mx-auto flex gap-3">
+      {/* Fixed Bottom Action */}
+      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-yenko-separator p-4">
+        <div className="max-w-lg mx-auto">
           {tripStatus === "driver_assigned" && (
             <Button
               onClick={handleStartTrip}
               disabled={loading}
-              className="flex-1 bg-yenko-blue hover:bg-yenko-deep text-white"
+              className="w-full h-14 bg-yenko-blue hover:bg-yenko-blue/90 text-white text-body font-semibold rounded-xl shadow-apple transition-apple disabled:opacity-50"
             >
-              <CheckCircle2 className="w-4 h-4 mr-2" />
+              <Play className="w-5 h-5 mr-2" />
               {loading ? "Starting..." : "Start Trip"}
             </Button>
           )}
@@ -173,16 +250,19 @@ export default function DriverTripControl() {
             <Button
               onClick={handleEndTrip}
               disabled={loading}
-              className="flex-1 bg-yenko-success hover:bg-yenko-deep text-white"
+              className="w-full h-14 bg-yenko-success hover:bg-yenko-success/90 text-white text-body font-semibold rounded-xl shadow-apple transition-apple disabled:opacity-50"
             >
-              <CheckCircle2 className="w-4 h-4 mr-2" />
+              <CheckCircle className="w-5 h-5 mr-2" />
               {loading ? "Ending..." : "End Trip"}
             </Button>
           )}
 
           {tripStatus === "completed" && (
-            <div className="flex-1 text-center py-2 text-yenko-success font-medium">
-              ✓ Trip Completed
+            <div className="flex items-center justify-center gap-2 py-4 text-yenko-success">
+              <CheckCircle className="w-6 h-6" />
+              <span className="text-headline font-semibold">
+                Trip Completed
+              </span>
             </div>
           )}
         </div>

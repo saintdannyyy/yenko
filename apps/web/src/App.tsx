@@ -6,14 +6,16 @@ import { authApi } from "@/lib/api";
 
 // Pages - will import from pages folder
 import Landing from "@/pages/Landing";
-import Login from "@/pages/auth/Login";
-import Verify from "@/pages/auth/Verify";
+import Login from "./pages/auth/Login";
+import Verify from "./pages/auth/Verify";
+import Profile from "@/pages/Profile";
 import ProfileSetup from "@/pages/onboard/ProfileSetup";
 import VehicleSetup from "@/pages/onboard/VehicleSetup";
 import PassengerHome from "@/pages/passenger/Home";
 import PassengerDrivers from "@/pages/passenger/Drivers";
 import PassengerDriverDetail from "@/pages/passenger/DriverDetail";
 import PassengerTripStatus from "@/pages/passenger/TripStatus";
+import DriverRegister from "@/pages/driver/Register";
 import DriverDirection from "@/pages/driver/Direction";
 import DriverRequests from "@/pages/driver/Requests";
 import DriverTripControl from "@/pages/driver/TripControl";
@@ -23,12 +25,18 @@ import NotFound from "@/pages/NotFound";
 
 // Auth initializer component - restores session on app load
 function AuthInitializer({ children }: { children: React.ReactNode }) {
-  const { token, setAuth, logout, setLoading } = useAuthStore();
+  const token = useAuthStore((s) => s.token);
+  const setAuth = useAuthStore((s) => s.setAuth);
+  const logout = useAuthStore((s) => s.logout);
+  const setLoading = useAuthStore((s) => s.setLoading);
   const [initialized, setInitialized] = useState(false);
 
   useEffect(() => {
     const initAuth = async () => {
-      if (!token) {
+      // Get fresh token from store
+      const currentToken = useAuthStore.getState().token;
+      
+      if (!currentToken) {
         setInitialized(true);
         return;
       }
@@ -43,8 +51,11 @@ function AuthInitializer({ children }: { children: React.ReactNode }) {
           onboardingStatus: response.onboardingStatus,
         });
       } catch (error) {
-        // Token invalid or expired, clear auth
-        logout();
+        // Only logout if we're not on an auth page (user might be mid-flow)
+        const isAuthPage = window.location.pathname.startsWith('/auth/');
+        if (!isAuthPage) {
+          logout();
+        }
       } finally {
         setLoading(false);
         setInitialized(true);
@@ -75,8 +86,14 @@ function ProtectedRoute({
   children: React.ReactNode;
   allowedRoles?: ("driver" | "passenger" | "admin")[];
 }) {
-  const { isAuthenticated, user, onboardingStatus, isLoading } = useAuthStore();
+  // Use proper selectors for reactivity
+  const token = useAuthStore((s) => s.token);
+  const user = useAuthStore((s) => s.user);
+  const onboardingStatus = useAuthStore((s) => s.onboardingStatus);
+  const isLoading = useAuthStore((s) => s.isLoading);
   const location = useLocation();
+
+  const isAuthenticated = token !== null && user !== null;
 
   // Still loading, show nothing
   if (isLoading) {
@@ -95,10 +112,11 @@ function ProtectedRoute({
     const currentPath = location.pathname;
     const redirectPath = onboardingStatus.redirectTo;
 
-    // Allow navigation to onboarding pages
+    // Allow navigation to onboarding pages (including driver registration)
     if (
       currentPath !== redirectPath &&
       !currentPath.startsWith("/onboard/") &&
+      !currentPath.startsWith("/driver/register") &&
       !currentPath.startsWith("/auth/")
     ) {
       return <Navigate to={redirectPath} replace />;
@@ -121,7 +139,12 @@ function ProtectedRoute({
 
 // Redirect authenticated users away from auth pages
 function PublicOnlyRoute({ children }: { children: React.ReactNode }) {
-  const { isAuthenticated, onboardingStatus } = useAuthStore();
+  // Use proper selectors for reactivity
+  const token = useAuthStore((s) => s.token);
+  const user = useAuthStore((s) => s.user);
+  const onboardingStatus = useAuthStore((s) => s.onboardingStatus);
+
+  const isAuthenticated = token !== null && user !== null;
 
   if (isAuthenticated && onboardingStatus) {
     return <Navigate to={onboardingStatus.redirectTo} replace />;
@@ -146,11 +169,7 @@ function App() {
         />
         <Route
           path="/auth/verify"
-          element={
-            <PublicOnlyRoute>
-              <Verify />
-            </PublicOnlyRoute>
-          }
+          element={<Verify />}
         />
 
         {/* Onboarding Routes (need auth but allow incomplete onboarding) */}
@@ -167,6 +186,16 @@ function App() {
           element={
             <ProtectedRoute allowedRoles={["driver"]}>
               <VehicleSetup />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Profile Route (all authenticated users) */}
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute>
+              <Profile />
             </ProtectedRoute>
           }
         />
@@ -206,6 +235,14 @@ function App() {
         />
 
         {/* Driver Routes */}
+        <Route
+          path="/driver/register"
+          element={
+            <ProtectedRoute allowedRoles={["driver"]}>
+              <DriverRegister />
+            </ProtectedRoute>
+          }
+        />
         <Route
           path="/driver/direction"
           element={

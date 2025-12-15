@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/button";
 import { Input } from "@/components/input";
 import { Card } from "@/components/card";
+import { AppHeader } from "@/components/app-header";
 import { MapPin, Search } from "lucide-react";
 import { toast } from "sonner";
 
@@ -36,20 +37,24 @@ export default function PassengerHome() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-yenko-blue to-yenko-bg">
+    <div className="min-h-screen bg-yenko-bgSecondary">
+      <AppHeader />
+
       <div className="max-w-md mx-auto p-6">
         {/* Header */}
-        <div className="text-white mb-8">
-          <h1 className="text-3xl font-bold">Go Somewhere</h1>
-          <p className="text-white/70">Where's your destination?</p>
+        <div className="mb-8">
+          <h1 className="text-title-md text-yenko-label">Go Somewhere</h1>
+          <p className="text-body text-yenko-muted">
+            Where's your destination?
+          </p>
         </div>
 
         {/* Search Card */}
-        <Card className="p-6 mb-8">
+        <Card className="p-6 mb-8 rounded-2xl shadow-apple">
           <form onSubmit={handleSearch} className="space-y-4">
             <div>
-              <label className="flex items-center gap-2 text-yenko-ink font-medium mb-2">
-                <MapPin className="w-4 h-4" />
+              <label className="flex items-center gap-2 text-subheadline font-medium text-yenko-secondary mb-2">
+                <MapPin className="w-4 h-4 text-yenko-blue" />
                 Pickup Location
               </label>
               <Input
@@ -57,13 +62,14 @@ export default function PassengerHome() {
                 placeholder="Enter pickup address"
                 value={pickup}
                 onChange={(e) => setPickup(e.target.value)}
+                className="h-12 rounded-xl bg-yenko-bgSecondary border-yenko-separator"
                 required
               />
             </div>
 
             <div>
-              <label className="flex items-center gap-2 text-yenko-ink font-medium mb-2">
-                <MapPin className="w-4 h-4" />
+              <label className="flex items-center gap-2 text-subheadline font-medium text-yenko-secondary mb-2">
+                <MapPin className="w-4 h-4 text-yenko-danger" />
                 Destination
               </label>
               <Input
@@ -71,6 +77,7 @@ export default function PassengerHome() {
                 placeholder="Enter destination address"
                 value={destination}
                 onChange={(e) => setDestination(e.target.value)}
+                className="h-12 rounded-xl bg-yenko-bgSecondary border-yenko-separator"
                 required
               />
             </div>
@@ -78,7 +85,7 @@ export default function PassengerHome() {
             <Button
               type="submit"
               disabled={loading}
-              className="w-full bg-yenko-blue hover:bg-yenko-deep text-white"
+              className="w-full h-12 bg-yenko-blue hover:bg-yenko-blue/90 text-white rounded-xl shadow-apple"
             >
               <Search className="w-4 h-4 mr-2" />
               {loading ? "Searching..." : "Search Drivers"}
@@ -87,12 +94,18 @@ export default function PassengerHome() {
         </Card>
 
         {/* Quick Actions */}
-        <div className="space-y-2">
-          <Button variant="outline" className="w-full justify-start">
-            <MapPin className="w-4 h-4 mr-2" />
+        <div className="space-y-3">
+          <Button
+            variant="outline"
+            className="w-full h-12 justify-start rounded-xl border-yenko-separator"
+          >
+            <MapPin className="w-4 h-4 mr-2 text-yenko-muted" />
             Recent Destinations
           </Button>
-          <Button variant="outline" className="w-full justify-start">
+          <Button
+            variant="outline"
+            className="w-full h-12 justify-start rounded-xl border-yenko-separator"
+          >
             Favorite Places
           </Button>
         </div>

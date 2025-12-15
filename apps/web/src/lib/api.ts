@@ -42,10 +42,13 @@ async function request<T>(
   const data = await response.json()
 
   if (!response.ok) {
-    // Handle token expiry
+    // Handle token expiry - but don't redirect if already on auth pages
     if (data.code === 'TOKEN_EXPIRED' || response.status === 401) {
-      useAuthStore.getState().logout()
-      window.location.href = '/auth/login'
+      const isAuthPage = window.location.pathname.startsWith('/auth/')
+      if (!isAuthPage) {
+        useAuthStore.getState().logout()
+        window.location.href = '/auth/login'
+      }
     }
     throw new ApiError(data.message || 'Request failed', response.status, data.code)
   }
@@ -233,6 +236,23 @@ export const authApi = {
   me: () => api.get<MeResponse>('/auth/me'),
 
   /**
+   * Update user profile
+   */
+  updateProfile: (data: { full_name?: string; profile_photo?: string }) =>
+    api.patch<{
+      success: boolean
+      message: string
+      user: {
+        id: string
+        phone: string
+        full_name: string
+        role: 'driver' | 'passenger' | 'admin'
+        profile_photo: string | null
+        rating: number | null
+      }
+    }>('/auth/profile', data),
+
+  /**
    * Refresh token
    */
   refresh: () => api.post<{ success: boolean; token: string }>('/auth/refresh'),
@@ -353,6 +373,9 @@ export const passengerApi = {
 // ============================================
 
 export const waitlistApi = {
-  join: (data: { email?: string; phone?: string; role: 'driver' | 'passenger'; city?: string }) =>
-    api.post('/waitlist/join', data),
+  join: (data: { name: string; phone: string; email?: string; area: string; role: 'driver' | 'passenger' }) =>
+    api.post<{ success: boolean; message: string }>('/waitlist/join', data),
+  
+  getStats: () =>
+    api.get<{ success: boolean; total: number }>('/waitlist/stats'),
 }

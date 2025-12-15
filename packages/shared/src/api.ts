@@ -139,10 +139,13 @@ export interface AdminRidesResponse extends PaginatedResponse<Ride> {}
 
 // Waitlist endpoints
 export interface WaitlistRequest {
+  name: string
+  phone: string
   email?: string
-  phone?: string
+  area: string
   role: 'driver' | 'passenger'
-  city?: string
 }
+
+export interface WaitlistStatsResponse extends ApiResponse<{ total: number }> {}
 
 export interface WaitlistResponse extends ApiResponse<WaitlistEntry> {}

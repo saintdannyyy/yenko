@@ -3,21 +3,13 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/button";
 import { Input } from "@/components/input";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/card";
-import { Label } from "@/components/label";
-import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
 } from "@/components/select";
-import { Car, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { authApi } from "@/lib/api";
 import { useAuthStore } from "@/store/authStore";
@@ -114,163 +106,164 @@ export default function VehicleSetup() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-yenko-blue to-yenko-deep flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
-        <Card className="border-0 shadow-2xl">
-          <CardHeader className="text-center pb-2">
-            <div className="mx-auto mb-4 w-16 h-16 bg-yenko-yellow/20 rounded-full flex items-center justify-center">
-              <Car className="w-8 h-8 text-yenko-yellow" />
+    <div className="min-h-screen bg-yenko-bgSecondary flex flex-col">
+      {/* Content */}
+      <div className="flex-1 flex items-center justify-center px-6 py-12">
+        <div className="w-full max-w-sm">
+          {/* Header */}
+          <div className="text-center mb-8">
+            <div className="text-5xl mb-4">🚗</div>
+            <h1 className="text-title-md text-yenko-label mb-2">
+              Add your vehicle
+            </h1>
+            <p className="text-body text-yenko-muted">
+              Tell us about your car to start offering rides
+            </p>
+          </div>
+
+          {/* Form */}
+          <form onSubmit={handleSubmit} className="space-y-5">
+            {/* Car Make */}
+            <div className="space-y-2">
+              <label className="block text-subheadline font-medium text-yenko-secondary">
+                Car Make
+              </label>
+              <Input
+                type="text"
+                placeholder="e.g., Toyota, Honda, Hyundai"
+                value={formData.car_make}
+                onChange={(e) => updateField("car_make", e.target.value)}
+                className="h-12 text-body bg-white border-yenko-separator rounded-xl px-4 focus:ring-2 focus:ring-yenko-blue/20 focus:border-yenko-blue transition-apple"
+                autoFocus
+                required
+              />
             </div>
-            <CardTitle className="text-2xl font-bold text-yenko-deep">
-              Register Your Vehicle
-            </CardTitle>
-            <CardDescription className="text-yenko-muted">
-              Add your car details to start offering rides
-            </CardDescription>
-          </CardHeader>
 
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              {/* Car Make */}
+            {/* Car Model */}
+            <div className="space-y-2">
+              <label className="block text-subheadline font-medium text-yenko-secondary">
+                Car Model
+              </label>
+              <Input
+                type="text"
+                placeholder="e.g., Corolla, Civic, Accent"
+                value={formData.car_model}
+                onChange={(e) => updateField("car_model", e.target.value)}
+                className="h-12 text-body bg-white border-yenko-separator rounded-xl px-4 focus:ring-2 focus:ring-yenko-blue/20 focus:border-yenko-blue transition-apple"
+                required
+              />
+            </div>
+
+            {/* Year and Color row */}
+            <div className="grid grid-cols-2 gap-3">
               <div className="space-y-2">
-                <Label htmlFor="make" className="text-yenko-ink">
-                  Car Make
-                </Label>
-                <Input
-                  id="make"
-                  type="text"
-                  placeholder="e.g., Toyota, Honda, Hyundai"
-                  value={formData.car_make}
-                  onChange={(e) => updateField("car_make", e.target.value)}
-                  className="h-11"
-                  autoFocus
-                  required
-                />
-              </div>
-
-              {/* Car Model */}
-              <div className="space-y-2">
-                <Label htmlFor="model" className="text-yenko-ink">
-                  Car Model
-                </Label>
-                <Input
-                  id="model"
-                  type="text"
-                  placeholder="e.g., Corolla, Civic, Accent"
-                  value={formData.car_model}
-                  onChange={(e) => updateField("car_model", e.target.value)}
-                  className="h-11"
-                  required
-                />
-              </div>
-
-              {/* Year and Color row */}
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label className="text-yenko-ink">Year</Label>
-                  <Select
-                    value={formData.car_year}
-                    onValueChange={(v: string) => updateField("car_year", v)}
-                  >
-                    <SelectTrigger className="h-11">
-                      <SelectValue placeholder="Select year" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {YEARS.map((year) => (
-                        <SelectItem key={year} value={year.toString()}>
-                          {year}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="space-y-2">
-                  <Label className="text-yenko-ink">Color</Label>
-                  <Select
-                    value={formData.car_color}
-                    onValueChange={(v: string) => updateField("car_color", v)}
-                  >
-                    <SelectTrigger className="h-11">
-                      <SelectValue placeholder="Select color" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {CAR_COLORS.map((color) => (
-                        <SelectItem key={color} value={color}>
-                          {color}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-
-              {/* Plate Number */}
-              <div className="space-y-2">
-                <Label htmlFor="plate" className="text-yenko-ink">
-                  Plate Number
-                </Label>
-                <Input
-                  id="plate"
-                  type="text"
-                  placeholder="e.g., GR-1234-20"
-                  value={formData.plate_number}
-                  onChange={(e) =>
-                    updateField("plate_number", e.target.value.toUpperCase())
-                  }
-                  className="h-11 uppercase"
-                  required
-                />
-              </div>
-
-              {/* Available Seats */}
-              <div className="space-y-2">
-                <Label className="text-yenko-ink">
-                  Available Seats for Passengers
-                </Label>
+                <label className="block text-subheadline font-medium text-yenko-secondary">
+                  Year
+                </label>
                 <Select
-                  value={formData.seats}
-                  onValueChange={(v: string) => updateField("seats", v)}
+                  value={formData.car_year}
+                  onValueChange={(v: string) => updateField("car_year", v)}
                 >
-                  <SelectTrigger className="h-11">
-                    <SelectValue placeholder="How many passengers can you take?" />
+                  <SelectTrigger className="h-12 bg-white border-yenko-separator rounded-xl">
+                    <SelectValue placeholder="Select" />
                   </SelectTrigger>
                   <SelectContent>
-                    {SEAT_OPTIONS.map((num) => (
-                      <SelectItem key={num} value={num.toString()}>
-                        {num} {num === 1 ? "seat" : "seats"}
+                    {YEARS.map((year) => (
+                      <SelectItem key={year} value={year.toString()}>
+                        {year}
                       </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
               </div>
 
-              {/* Submit button */}
-              <Button
-                type="submit"
-                disabled={loading || !isFormValid()}
-                className="w-full h-12 bg-yenko-blue hover:bg-yenko-deep text-white text-lg mt-6"
-              >
-                {loading ? (
-                  <>
-                    <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                    Registering...
-                  </>
-                ) : (
-                  "Complete Registration"
-                )}
-              </Button>
-            </form>
-
-            {/* Info text */}
-            <div className="mt-6 bg-blue-50 border border-blue-100 rounded-lg p-4">
-              <p className="text-sm text-yenko-deep">
-                <strong>Almost there!</strong> Once registered, you can start
-                offering rides and earning money on your daily commute.
-              </p>
+              <div className="space-y-2">
+                <label className="block text-subheadline font-medium text-yenko-secondary">
+                  Color
+                </label>
+                <Select
+                  value={formData.car_color}
+                  onValueChange={(v: string) => updateField("car_color", v)}
+                >
+                  <SelectTrigger className="h-12 bg-white border-yenko-separator rounded-xl">
+                    <SelectValue placeholder="Select" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {CAR_COLORS.map((color) => (
+                      <SelectItem key={color} value={color}>
+                        {color}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
-          </CardContent>
-        </Card>
+
+            {/* Plate Number */}
+            <div className="space-y-2">
+              <label className="block text-subheadline font-medium text-yenko-secondary">
+                Plate Number
+              </label>
+              <Input
+                type="text"
+                placeholder="e.g., GR-1234-20"
+                value={formData.plate_number}
+                onChange={(e) =>
+                  updateField("plate_number", e.target.value.toUpperCase())
+                }
+                className="h-12 text-body bg-white border-yenko-separator rounded-xl px-4 uppercase focus:ring-2 focus:ring-yenko-blue/20 focus:border-yenko-blue transition-apple"
+                required
+              />
+            </div>
+
+            {/* Available Seats */}
+            <div className="space-y-2">
+              <label className="block text-subheadline font-medium text-yenko-secondary">
+                Available Seats
+              </label>
+              <Select
+                value={formData.seats}
+                onValueChange={(v: string) => updateField("seats", v)}
+              >
+                <SelectTrigger className="h-12 bg-white border-yenko-separator rounded-xl">
+                  <SelectValue placeholder="How many passengers?" />
+                </SelectTrigger>
+                <SelectContent>
+                  {SEAT_OPTIONS.map((num) => (
+                    <SelectItem key={num} value={num.toString()}>
+                      {num} {num === 1 ? "seat" : "seats"}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Submit button */}
+            <Button
+              type="submit"
+              disabled={loading || !isFormValid()}
+              className="w-full h-14 bg-yenko-blue hover:bg-yenko-blue/90 text-white text-body font-semibold rounded-xl shadow-apple transition-apple disabled:opacity-40 mt-4"
+            >
+              {loading ? (
+                <>
+                  <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                  Registering...
+                </>
+              ) : (
+                "Complete Registration"
+              )}
+            </Button>
+          </form>
+
+          {/* Info text */}
+          <div className="mt-6 bg-white border border-yenko-separator rounded-2xl p-4">
+            <p className="text-subheadline text-yenko-secondary">
+              <span className="font-semibold">Almost there!</span> Once
+              registered, you can start offering rides and earning money on your
+              daily commute.
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   );

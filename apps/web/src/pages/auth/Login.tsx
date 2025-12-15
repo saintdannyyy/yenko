@@ -2,15 +2,7 @@ import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/button";
 import { Input } from "@/components/input";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/card";
-import { Label } from "@/components/label";
-import { Phone, ArrowLeft, Loader2 } from "lucide-react";
+import { ArrowLeft, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { authApi } from "@/lib/api";
 
@@ -80,89 +72,84 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-yenko-blue to-yenko-deep flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
-        {/* Back button */}
+    <div className="min-h-screen bg-yenko-bgSecondary flex flex-col">
+      {/* Navigation */}
+      <nav className="p-4">
         <Link
           to="/"
-          className="inline-flex items-center text-white/80 hover:text-white mb-6 transition-colors"
+          className="inline-flex items-center text-yenko-blue hover:text-yenko-blue/80 transition-apple text-body font-medium"
         >
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          Back to home
+          <ArrowLeft className="w-5 h-5 mr-1" />
+          Back
         </Link>
+      </nav>
 
-        <Card className="border-0 shadow-2xl">
-          <CardHeader className="text-center pb-2">
-            <div className="mx-auto mb-4 w-16 h-16 bg-yenko-blue/10 rounded-full flex items-center justify-center">
-              <Phone className="w-8 h-8 text-yenko-blue" />
-            </div>
-            <CardTitle className="text-2xl font-bold text-yenko-deep">
+      {/* Content */}
+      <div className="flex-1 flex items-center justify-center px-6 pb-12">
+        <div className="w-full max-w-sm">
+          {/* Header */}
+          <div className="text-center mb-10">
+            <div className="text-5xl mb-4">🚗</div>
+            <h1 className="text-title-md text-yenko-label mb-2">
               Welcome to Yenko
-            </CardTitle>
-            <CardDescription className="text-yenko-muted">
-              Enter your phone number to get started
-            </CardDescription>
-          </CardHeader>
+            </h1>
+            <p className="text-body text-yenko-muted">
+              Enter your phone number to continue
+            </p>
+          </div>
 
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="space-y-2">
-                <Label htmlFor="phone" className="text-yenko-ink">
-                  Phone Number
-                </Label>
-                <div className="relative">
-                  <Input
-                    id="phone"
-                    type="tel"
-                    placeholder="+233 XX XXX XXXX"
-                    value={phone}
-                    onChange={handlePhoneChange}
-                    className="pl-4 text-lg h-12"
-                    autoFocus
-                    required
-                  />
-                </div>
-                <p className="text-sm text-yenko-muted">
-                  We'll send you a verification code via SMS
-                </p>
-              </div>
-
-              <Button
-                type="submit"
-                disabled={loading || phone.length < 13}
-                className="w-full h-12 bg-yenko-blue hover:bg-yenko-deep text-white text-lg"
+          {/* Form */}
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="space-y-2">
+              <label
+                htmlFor="phone"
+                className="block text-subheadline font-medium text-yenko-secondary"
               >
-                {loading ? (
-                  <>
-                    <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                    Sending...
-                  </>
-                ) : (
-                  "Continue"
-                )}
-              </Button>
-            </form>
-
-            <div className="mt-6 text-center text-sm text-yenko-muted">
-              By continuing, you agree to our{" "}
-              <Link to="/terms" className="text-yenko-blue hover:underline">
-                Terms of Service
-              </Link>{" "}
-              and{" "}
-              <Link to="/privacy" className="text-yenko-blue hover:underline">
-                Privacy Policy
-              </Link>
+                Phone Number
+              </label>
+              <Input
+                id="phone"
+                type="tel"
+                placeholder="+233 XX XXX XXXX"
+                value={phone}
+                onChange={handlePhoneChange}
+                className="h-14 text-body bg-white border-yenko-separator rounded-xl px-4 focus:ring-2 focus:ring-yenko-blue/20 focus:border-yenko-blue transition-apple"
+                autoFocus
+                required
+              />
+              <p className="text-footnote text-yenko-muted">
+                We'll send you a verification code via SMS
+              </p>
             </div>
-          </CardContent>
-        </Card>
 
-        {/* Help text */}
-        <p className="text-center text-white/60 text-sm mt-6">
-          Having trouble?{" "}
-          <Link to="/help" className="text-white hover:underline">
-            Get help
-          </Link>
-        </p>
+            <Button
+              type="submit"
+              disabled={loading || phone.length < 13}
+              className="w-full h-14 bg-yenko-blue hover:bg-yenko-blue/90 text-white text-body font-semibold rounded-xl shadow-apple transition-apple disabled:opacity-40"
+            >
+              {loading ? (
+                <>
+                  <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                  Sending...
+                </>
+              ) : (
+                "Continue"
+              )}
+            </Button>
+          </form>
+
+          {/* Footer */}
+          <p className="mt-8 text-center text-footnote text-yenko-muted">
+            By continuing, you agree to our{" "}
+            <Link to="/terms" className="text-yenko-blue">
+              Terms of Service
+            </Link>{" "}
+            and{" "}
+            <Link to="/privacy" className="text-yenko-blue">
+              Privacy Policy
+            </Link>
+          </p>
+        </div>
       </div>
     </div>
   );
