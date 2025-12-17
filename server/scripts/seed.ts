@@ -1,5 +1,5 @@
 import 'dotenv/config'
-import { supabaseAdmin } from '../src/supabase/client'
+import { supabaseAdmin } from '../src/supabase/client.js'
 
 async function seed() {
   console.log('🌱 Seeding database...')
@@ -13,7 +13,7 @@ async function seed() {
     for (const email of testEmails) {
       try {
         const { data: users } = await supabaseAdmin.auth.admin.listUsers()
-        const existingUser = users.users.find(u => u.email === email)
+        const existingUser = users.users.find((u: any) => u.email === email)
         if (existingUser) {
           await supabaseAdmin.auth.admin.deleteUser(existingUser.id)
           console.log(`Deleted existing user: ${email}`)
@@ -198,9 +198,9 @@ async function seed() {
     console.log(`✓ Created ${rides.length} sample rides`)
 
     // Create sample ratings for completed rides
-    const completedRides = rideData?.filter((r) => r.status === 'completed') || []
+    const completedRides = rideData?.filter((r: any) => r.status === 'completed') || []
     if (completedRides.length > 0) {
-      const ratings = completedRides.map((ride) => ({
+      const ratings = completedRides.map((ride: any) => ({
         ride_id: ride.id,
         driver_id: driverId,
         passenger_id: passengerId,
