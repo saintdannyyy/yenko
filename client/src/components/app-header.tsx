@@ -1,13 +1,13 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useAuthStore } from "@/store/authStore";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/dropdown-menu";
+} from "@/components/ui/dropdown-menu";
 import { User, Settings, LogOut, ChevronLeft, Car, Users } from "lucide-react";
 import { cn } from "@/lib/utils";
 
