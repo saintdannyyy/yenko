@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Button } from "@/components/button";
+import { Button } from "@/components/ui/button";
 import { AppHeader } from "@/components/app-header";
 import { MapPin, Users, Clock, Check } from "lucide-react";
 import { toast } from "sonner";

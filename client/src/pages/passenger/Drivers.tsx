@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { useAuthStore } from "@/store/authStore";
-import { Card } from "@/components/card";
-import { Button } from "@/components/button";
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { Star, Users, Wind, Music } from "lucide-react";
 import { toast } from "sonner";
 

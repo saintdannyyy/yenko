@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Button } from "@/components/button";
-import { Input } from "@/components/input";
-import { Card } from "@/components/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Card } from "@/components/ui/card";
 import { AppHeader } from "@/components/app-header";
 import { MapPin, Search } from "lucide-react";
 import { toast } from "sonner";

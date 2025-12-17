@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { Button } from "@/components/button";
-import { Input } from "@/components/input";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { ArrowLeft, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { authApi } from "@/lib/api";

@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { Button } from "@/components/button";
-import { Card } from "@/components/card";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import { Star, MapPin, AlertCircle } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";

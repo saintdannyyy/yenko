@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Button } from "@/components/button";
+import { Button } from "@/components/ui/button";
 import { TrendingUp, Calendar, Car, Star, Info } from "lucide-react";
 import { toast } from "sonner";
 

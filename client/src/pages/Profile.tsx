@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Button } from "@/components/button";
-import { Input } from "@/components/input";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/avatar";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { AppHeader } from "@/components/app-header";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Camera,
   Phone,
