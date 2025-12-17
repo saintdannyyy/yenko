@@ -35,7 +35,7 @@ function AuthInitializer({ children }: { children: React.ReactNode }) {
     const initAuth = async () => {
       // Get fresh token from store
       const currentToken = useAuthStore.getState().token;
-      
+
       if (!currentToken) {
         setInitialized(true);
         return;
@@ -52,7 +52,7 @@ function AuthInitializer({ children }: { children: React.ReactNode }) {
         });
       } catch (error) {
         // Only logout if we're not on an auth page (user might be mid-flow)
-        const isAuthPage = window.location.pathname.startsWith('/auth/');
+        const isAuthPage = window.location.pathname.startsWith("/auth/");
         if (!isAuthPage) {
           logout();
         }
@@ -167,10 +167,7 @@ function App() {
             </PublicOnlyRoute>
           }
         />
-        <Route
-          path="/auth/verify"
-          element={<Verify />}
-        />
+        <Route path="/auth/verify" element={<Verify />} />
 
         {/* Onboarding Routes (need auth but allow incomplete onboarding) */}
         <Route
