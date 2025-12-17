@@ -23,24 +23,64 @@ import {
   Loader2,
 } from "lucide-react";
 
+const API_BASE = import.meta.env.VITE_API_URL || "/api";
+
 export function WaitlistSection() {
   const [activeTab, setActiveTab] = useState<"passenger" | "driver">(
     "passenger",
   );
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [totalSignups] = useState(327);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // Form state
+  const [formData, setFormData] = useState({
+    name: "",
+    phone: "",
+    area: "",
+    email: "",
+  });
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    setError(null);
 
-    // Simulate API call
-    setTimeout(() => {
-      setLoading(false);
+    try {
+      const response = await fetch(`${API_BASE}/waitlist/join`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          phone: formData.phone,
+          area: formData.area,
+          email: formData.email || undefined,
+          role: activeTab,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.message || "Failed to join waitlist");
+      }
+
       setSubmitted(true);
+      setFormData({ name: "", phone: "", area: "", email: "" });
       setTimeout(() => setSubmitted(false), 5000);
-    }, 1500);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Something went wrong");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -197,6 +237,15 @@ export function WaitlistSection() {
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-5 relative z-10">
+                {/* Error banner */}
+                {error && (
+                  <div className="bg-red-50 border border-red-200 rounded-xl p-4 flex items-start gap-3">
+                    <span className="text-red-500 text-sm font-medium">
+                      {error}
+                    </span>
+                  </div>
+                )}
+
                 {/* Info banner */}
                 <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-4 flex items-start gap-3">
                   <Sparkles className="w-5 h-5 text-[#0057FF] flex-shrink-0 mt-0.5" />
@@ -231,6 +280,9 @@ export function WaitlistSection() {
                     </label>
                     <Input
                       type="text"
+                      name="name"
+                      value={formData.name}
+                      onChange={handleInputChange}
                       placeholder="Kwame Asante"
                       required
                       disabled={loading}
@@ -243,6 +295,9 @@ export function WaitlistSection() {
                     </label>
                     <Input
                       type="tel"
+                      name="phone"
+                      value={formData.phone}
+                      onChange={handleInputChange}
                       placeholder="024 XXX XXXX"
                       required
                       disabled={loading}
@@ -257,6 +312,9 @@ export function WaitlistSection() {
                     </label>
                     <Input
                       type="text"
+                      name="area"
+                      value={formData.area}
+                      onChange={handleInputChange}
                       placeholder="e.g., Madina, East Legon"
                       required
                       disabled={loading}
@@ -269,6 +327,9 @@ export function WaitlistSection() {
                     </label>
                     <Input
                       type="email"
+                      name="email"
+                      value={formData.email}
+                      onChange={handleInputChange}
                       placeholder="kwame@example.com"
                       disabled={loading}
                       className="h-14 rounded-xl border-2 border-gray-200 focus:border-[#0057FF] text-base"
