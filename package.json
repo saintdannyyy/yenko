@@ -1,24 +1,24 @@
 {
-  "name": "yenko",
-  "private": true,
-  "version": "0.1.0",
-  "description": "Yenko - Ride sharing platform for Ghana",
-  "scripts": {
-    "dev": "pnpm --filter @yenko/api dev & pnpm --filter @yenko/web dev",
-    "dev:web": "pnpm --filter @yenko/web dev",
-    "dev:api": "pnpm --filter @yenko/api dev",
-    "build": "pnpm -r build",
-    "build:web": "pnpm --filter @yenko/web build",
-    "build:api": "pnpm --filter @yenko/api build",
-    "start": "pnpm --filter @yenko/api start",
-    "typecheck": "pnpm -r typecheck",
-    "test": "pnpm -r test",
-    "clean": "rm -rf node_modules apps/*/node_modules packages/*/node_modules",
-    "seed": "pnpm --filter @yenko/api seed"
-  },
-  "engines": {
-    "node": ">=18.0.0",
-    "pnpm": ">=8.0.0"
-  },
-  "packageManager": "pnpm@9.0.0"
+    "name": "yenko",
+    "private": true,
+    "version": "0.1.0",
+    "description": "Yenko - Ride sharing platform for Ghana",
+    "scripts": {
+        "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
+        "dev:client": "cd client && npm run dev",
+        "dev:server": "cd server && npm run dev",
+        "build": "npm run build:client && npm run build:server",
+        "build:client": "cd client && npm run build",
+        "build:server": "cd server && npm run build",
+        "install:all": "cd client && npm install && cd ../server && npm install",
+        "start": "cd server && npm start",
+        "typecheck": "cd client && npm run typecheck && cd ../server && npm run typecheck",
+        "test": "cd client && npm test && cd ../server && npm test"
+    },
+    "devDependencies": {
+        "concurrently": "^8.2.2"
+    },
+    "engines": {
+        "node": ">=18.0.0"
+    }
 }
