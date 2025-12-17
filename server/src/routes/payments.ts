@@ -1,13 +1,14 @@
 import { Router, Request, Response } from 'express'
 import type { Router as ExpressRouter } from 'express'
-import { supabaseAdmin } from '../supabase/client'
-import { verifyToken } from '../middleware/auth'
+import { supabaseAdmin } from '../supabase/client.js'
+import { verifyToken } from '../middleware/auth.js'
+import type { AuthenticatedRequest } from '../types/index.js'
 import crypto from 'crypto'
 
 export const paymentsRouter: ExpressRouter = Router()
 
 // Initialize Paystack payment
-paymentsRouter.post('/paystack/init', verifyToken, async (req: Request, res: Response) => {
+paymentsRouter.post('/paystack/init', verifyToken, async (req: AuthenticatedRequest, res: Response) => {
   try {
     const { amount, email, metadata } = req.body
     const userId = req.userId

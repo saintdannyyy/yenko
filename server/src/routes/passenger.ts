@@ -1,7 +1,8 @@
 import { Router, Request, Response } from 'express'
 import type { Router as ExpressRouter } from 'express'
-import { supabaseAdmin } from '../supabase/client'
-import { verifyToken } from '../middleware/auth'
+import { supabaseAdmin } from '../supabase/client.js'
+import { verifyToken } from '../middleware/auth.js'
+import type { AuthenticatedRequest } from '../types/index.js'
 
 export const passengerRouter: ExpressRouter = Router()
 
@@ -88,7 +89,7 @@ passengerRouter.post('/trip/estimate', async (req: Request, res: Response) => {
 })
 
 // Request a ride
-passengerRouter.post('/trip/request', verifyToken, async (req: Request, res: Response) => {
+passengerRouter.post('/trip/request', verifyToken, async (req: AuthenticatedRequest, res: Response) => {
   try {
     const { driverId, pickup, destination, price, paystackRef } = req.body
     const passengerId = req.userId
@@ -146,7 +147,7 @@ passengerRouter.get('/trip/:id', verifyToken, async (req: Request, res: Response
 })
 
 // Rate trip
-passengerRouter.post('/trip/:id/rate', verifyToken, async (req: Request, res: Response) => {
+passengerRouter.post('/trip/:id/rate', verifyToken, async (req: AuthenticatedRequest, res: Response) => {
   try {
     const { id } = req.params
     const { rating, comment } = req.body

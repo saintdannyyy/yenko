@@ -1,6 +1,6 @@
 import { Router, Request, Response } from 'express'
 import type { Router as ExpressRouter } from 'express'
-import { supabaseAdmin } from '../supabase/client'
+import { supabaseAdmin } from '../supabase/client.js'
 
 export const matchingRouter: ExpressRouter = Router()
 

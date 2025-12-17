@@ -1,7 +1,7 @@
 import { Router, Request, Response, IRouter } from 'express'
 import jwt from 'jsonwebtoken'
-import { supabaseAdmin } from '../supabase/client'
-import { verifyToken, AuthRequest } from '../middleware/auth'
+import { supabaseAdmin } from '../supabase/client.js'
+import { verifyToken, AuthRequest } from '../middleware/auth.js'
 
 export const authRouter: IRouter = Router()
 

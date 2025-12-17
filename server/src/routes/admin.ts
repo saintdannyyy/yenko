@@ -283,13 +283,13 @@ adminRouter.get('/analytics/detailed', verifyToken, requireRole(['admin']), asyn
     const { data: usersData } = await supabaseAdmin.from('profiles').select('*')
     const { data: driversData } = await supabaseAdmin.from('drivers').select('*')
 
-    const completedRides = ridesData?.filter((r) => r.status === 'completed') || []
-    const pendingRides = ridesData?.filter((r) => r.status === 'pending') || []
-    const cancelledRides = ridesData?.filter((r) => r.status === 'cancelled') || []
+    const completedRides = ridesData?.filter((r: any) => r.status === 'completed') || []
+    const pendingRides = ridesData?.filter((r: any) => r.status === 'pending') || []
+    const cancelledRides = ridesData?.filter((r: any) => r.status === 'cancelled') || []
     
-    const totalRevenue = completedRides.reduce((sum, ride) => sum + (ride.final_price || 0), 0)
-    const verifiedDrivers = driversData?.filter((d) => d.verified).length || 0
-    const premiumDrivers = driversData?.filter((d) => d.is_premium).length || 0
+    const totalRevenue = completedRides.reduce((sum: number, ride: any) => sum + (ride.final_price || 0), 0)
+    const verifiedDrivers = driversData?.filter((d: any) => d.verified).length || 0
+    const premiumDrivers = driversData?.filter((d: any) => d.is_premium).length || 0
 
     // Calculate daily revenue for the last 7 days
     const last7Days = []
@@ -298,13 +298,13 @@ adminRouter.get('/analytics/detailed', verifyToken, requireRole(['admin']), asyn
       date.setDate(date.getDate() - i)
       const dateStr = date.toISOString().split('T')[0]
       
-      const dayRides = completedRides.filter((r) => 
+      const dayRides = completedRides.filter((r: any) => 
         r.created_at.startsWith(dateStr)
       )
       
       last7Days.push({
         date: dateStr,
-        revenue: dayRides.reduce((sum, r) => sum + (r.final_price || 0), 0),
+        revenue: dayRides.reduce((sum: number, r: any) => sum + (r.final_price || 0), 0),
         rides: dayRides.length,
       })
     }
