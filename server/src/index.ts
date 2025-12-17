@@ -3,13 +3,13 @@ import express, { Request, Response, NextFunction } from 'express'
 import cors from 'cors'
 
 // Route imports
-import { authRouter } from './routes/auth'
-import { passengerRouter } from './routes/passenger'
-import { driverRouter } from './routes/driver'
-import { paymentsRouter } from './routes/payments'
-import { matchingRouter } from './routes/matching'
-import { adminRouter } from './routes/admin'
-import { waitlistRouter } from './routes/waitlist'
+import { authRouter } from './routes/auth.js'
+import { passengerRouter } from './routes/passenger.js'
+import { driverRouter } from './routes/driver.js'
+import { paymentsRouter } from './routes/payments.js'
+import { matchingRouter } from './routes/matching.js'
+import { adminRouter } from './routes/admin.js'
+import { waitlistRouter } from './routes/waitlist.js'
 
 // Middleware
 const app = express()
