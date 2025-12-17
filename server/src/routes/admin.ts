@@ -1,7 +1,7 @@
 import { Router, Request, Response } from 'express'
 import type { Router as ExpressRouter } from 'express'
-import { supabaseAdmin } from '../supabase/client'
-import { verifyToken, requireRole } from '../middleware/auth'
+import { supabaseAdmin } from '../supabase/client.js'
+import { verifyToken, requireRole } from '../middleware/auth.js'
 
 export const adminRouter: ExpressRouter = Router()
 
