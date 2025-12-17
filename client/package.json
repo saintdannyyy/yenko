@@ -4,11 +4,11 @@
   "version": "0.1.0",
   "type": "module",
   "scripts": {
-    "dev": "npx vite --port 3000",
-    "build": "npx vite build",
-    "preview": "npx vite preview",
-    "typecheck": "npx tsc --noEmit",
-    "test": "npx vitest"
+    "dev": "vite --port 3000",
+    "build": "vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.3.4",
