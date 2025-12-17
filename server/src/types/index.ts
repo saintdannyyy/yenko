@@ -2,6 +2,8 @@
  * Core types shared between frontend and backend
  */
 
+import type { Request } from 'express'
+
 // User types
 export type UserRole = 'driver' | 'passenger' | 'admin'
 
@@ -264,3 +266,42 @@ export interface WaitlistRequest {
 export interface WaitlistStatsResponse extends ApiResponse<{ total: number }> {}
 
 export interface WaitlistResponse extends ApiResponse<WaitlistEntry> {}
+
+// Express request extensions
+export interface AuthenticatedRequest extends Request {
+  userId?: string
+}
+
+// Driver route-specific types
+export interface UpdateProfileRequest {
+  car_make: string
+  car_model: string
+  car_year?: string
+  car_color?: string
+  plate_number: string
+  seats?: number
+  condition_ac?: boolean | string
+  condition_quiet?: boolean | string
+  condition_music?: boolean | string
+  is_premium?: boolean | string
+}
+
+export interface SetDirectionRequest {
+  start_location: Location
+  end_location: Location
+  polyline?: string
+  departure_time: string
+  seats: number
+}
+
+export interface RideActionRequest {
+  ride_id: string
+}
+
+export interface Earnings {
+  total: number
+  thisWeek: number
+  thisMonth: number
+  trips: number
+  rating: number
+}
