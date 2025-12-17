@@ -1,7 +1,8 @@
 import { Router, Request, Response } from 'express'
+import type { Router as ExpressRouter } from 'express'
 import { supabaseAdmin } from '../supabase/client'
 
-export const matchingRouter = Router()
+export const matchingRouter: ExpressRouter = Router()
 
 // Find matching drivers
 matchingRouter.post('/find-drivers', async (req: Request, res: Response) => {

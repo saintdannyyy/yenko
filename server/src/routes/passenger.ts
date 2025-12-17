@@ -1,8 +1,9 @@
 import { Router, Request, Response } from 'express'
+import type { Router as ExpressRouter } from 'express'
 import { supabaseAdmin } from '../supabase/client'
 import { verifyToken } from '../middleware/auth'
 
-export const passengerRouter = Router()
+export const passengerRouter: ExpressRouter = Router()
 
 // Get drivers for passenger search
 passengerRouter.get('/drivers', async (req: Request, res: Response) => {

@@ -1,7 +1,8 @@
 import { Router, Request, Response } from 'express'
+import type { Router as ExpressRouter } from 'express'
 import { supabaseAdmin } from '../supabase/client'
 
-export const waitlistRouter = Router()
+export const waitlistRouter: ExpressRouter = Router()
 
 // Add to waitlist
 waitlistRouter.post('/join', async (req: Request, res: Response) => {
