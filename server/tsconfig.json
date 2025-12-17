@@ -13,14 +13,7 @@
         "resolveJsonModule": true,
         "outDir": "dist",
         "declaration": true,
-        "declarationMap": true,
-        "ignoreDeprecations": "6.0",
-        "baseUrl": ".",
-        "paths": {
-            "@/*": [
-                "src/*"
-            ]
-        }
+        "declarationMap": true
     },
     "include": [
         "src",
