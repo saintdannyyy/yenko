@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Car, Users, Loader2, Check } from "lucide-react";
+import { Car, Users, Loader2, Check, UserCircle2 } from "lucide-react";
 import { toast } from "sonner";
 import { authApi } from "@/lib/api";
 import { useAuthStore } from "@/store/authStore";
@@ -60,18 +60,20 @@ export default function ProfileSetup() {
   };
 
   return (
-    <div className="min-h-screen bg-yenko-bgSecondary flex flex-col">
+    <div className="max-h-screen bg-yenko-bgSecondary flex flex-col">
       {/* Content */}
-      <div className="flex-1 flex items-center justify-center px-6 py-12">
+      <div className="flex-1 flex items-center justify-center p-6">
         <div className="w-full max-w-sm">
           {/* Header */}
           <div className="text-center mb-10">
-            <div className="text-5xl mb-4">👤</div>
-            <h1 className="text-title-md text-yenko-label mb-2">
+            <div className="mb-2 items-center justify-center flex">
+              <UserCircle2 size={80} color="#0057FF" />
+            </div>
+            <h1 className="text-xl font-semibold text-yenko-label mb-2">
               Complete your profile
             </h1>
             <p className="text-body text-yenko-muted">
-              Tell us a bit about yourself
+              To ensure your security, tell us a bit about yourself
             </p>
           </div>
 
