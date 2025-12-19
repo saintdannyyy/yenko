@@ -128,7 +128,7 @@ authRouter.post('/verify-otp', async (req: Request, res: Response) => {
         console.error('Create user error:', authError)
         return res.status(500).json({
           success: false,
-          message: 'Failed to create account',
+          message: `Failed to create account: ${authError.message}`,
         })
       }
 
