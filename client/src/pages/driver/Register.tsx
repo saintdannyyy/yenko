@@ -282,9 +282,13 @@ export default function DriverRegister() {
                       <SelectTrigger className="h-12 bg-yenko-bgSecondary border-yenko-separator rounded-xl">
                         <SelectValue placeholder="Select make" />
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent className="bg-yenko-blue/90">
                         {CAR_MAKES.map((make) => (
-                          <SelectItem key={make} value={make}>
+                          <SelectItem
+                            key={make}
+                            value={make}
+                            className="text-white"
+                          >
                             {make}
                           </SelectItem>
                         ))}
@@ -321,7 +325,7 @@ export default function DriverRegister() {
                         <SelectTrigger className="h-12 bg-yenko-bgSecondary border-yenko-separator rounded-xl">
                           <SelectValue placeholder="Year" />
                         </SelectTrigger>
-                        <SelectContent>
+                        <SelectContent className="bg-yenko-blue/90">
                           {YEARS.map((year) => (
                             <SelectItem key={year} value={year.toString()}>
                               {year}
@@ -344,9 +348,13 @@ export default function DriverRegister() {
                         <SelectTrigger className="h-12 bg-yenko-bgSecondary border-yenko-separator rounded-xl">
                           <SelectValue placeholder="Color" />
                         </SelectTrigger>
-                        <SelectContent>
+                        <SelectContent className="bg-yenko-blue/90">
                           {CAR_COLORS.map((color) => (
-                            <SelectItem key={color} value={color}>
+                            <SelectItem
+                              key={color}
+                              value={color}
+                              className="text-white"
+                            >
                               {color}
                             </SelectItem>
                           ))}
@@ -362,12 +370,14 @@ export default function DriverRegister() {
           {/* Step 2: Plate & Seats */}
           {step === 2 && (
             <div className="space-y-6">
-              <div className="text-center mb-8">
-                <div className="text-5xl mb-4">🚗</div>
+              <div className="text-center mb-2">
+                <div className="text-5xl mb-2 flex justify-center items-center">
+                  <img src="/driver.png" alt="Driver SignUp" />
+                </div>
                 <h1 className="text-title-md text-yenko-label">
-                  Almost there!
+                  Almost there! Yenko!
                 </h1>
-                <p className="text-body text-yenko-muted mt-2">
+                <p className="text-yenko-blue text-lg font-semibold mt-2">
                   Add your plate number and available seats
                 </p>
               </div>
@@ -537,7 +547,7 @@ export default function DriverRegister() {
               (step === 1 && !isStep1Valid()) ||
               (step === 2 && !isStep2Valid())
             }
-            className="w-full h-14 bg-yenko-blue hover:bg-yenko-blue/90 text-white text-body font-semibold rounded-xl shadow-apple transition-apple disabled:opacity-40"
+            className="w-full h-14 bg-yenko-blue hover:bg-yenko-blue/90 text-white font-semibold rounded-xl shadow-apple transition-apple disabled:opacity-40"
           >
             {loading ? (
               <>
