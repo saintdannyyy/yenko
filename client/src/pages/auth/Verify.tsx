@@ -155,9 +155,9 @@ export default function Verify() {
   if (!phone) return null;
 
   return (
-    <div className="min-h-screen bg-yenko-bgSecondary flex flex-col">
+    <div className="max-h-screen bg-yenko-bgSecondary flex flex-col">
       {/* Navigation */}
-      <nav className="p-4">
+      <nav className="p-4 border-b-4 border-yenko-separator">
         <Link
           to="/auth/login"
           className="inline-flex items-center text-yenko-blue hover:text-yenko-blue/80 transition-apple text-body font-medium"
@@ -168,11 +168,11 @@ export default function Verify() {
       </nav>
 
       {/* Content */}
-      <div className="flex-1 flex items-center justify-center px-6 pb-12">
+      <div className="flex-1 flex items-center justify-center px-6 py-12">
         <div className="w-full max-w-sm">
           {/* Header */}
           <div className="text-center mb-10">
-            <h1 className="text-title-md text-yenko-label mb-2">
+            <h1 className="text-xl font-semibold text-yenko-blue text-yenko-label mb-2">
               Enter verification code
             </h1>
             <p className="text-body text-yenko-muted">
@@ -195,7 +195,7 @@ export default function Verify() {
                   onChange={(e) => handleChange(index, e.target.value)}
                   onKeyDown={(e) => handleKeyDown(index, e)}
                   disabled={loading}
-                  className="w-12 h-14 text-center text-title-sm bg-white border border-yenko-separator rounded-xl
+                  className="w-12 h-14 text-center text-yenko-blue text-title-sm bg-white border border-yenko-separator rounded-xl
                     focus:border-yenko-blue focus:ring-2 focus:ring-yenko-blue/20 outline-none
                     disabled:opacity-40 disabled:cursor-not-allowed
                     transition-apple"
@@ -213,12 +213,13 @@ export default function Verify() {
 
             {/* Resend button */}
             <div className="text-center">
+              <p>Didn't receive the code?</p>
               <Button
                 type="button"
                 variant="ghost"
                 disabled={countdown > 0 || resendLoading}
                 onClick={handleResend}
-                className="text-yenko-blue hover:text-yenko-blue/80 text-body font-medium transition-apple disabled:text-yenko-muted"
+                className="text-yenko-blue hover:text-yenko-blue/80 font-medium transition-apple disabled:text-yenko-muted mt-2"
               >
                 {resendLoading ? (
                   <Loader2 className="w-4 h-4 mr-2 animate-spin" />
