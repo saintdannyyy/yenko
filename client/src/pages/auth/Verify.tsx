@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Loader2 } from "lucide-react";
+import { ArrowLeft, Loader2, PartyPopper } from "lucide-react";
 import { toast } from "sonner";
 import { authApi } from "@/lib/api";
 import { useAuthStore } from "@/store/authStore";
@@ -167,8 +167,17 @@ export default function Verify() {
         </Link>
       </nav>
 
+      {/* New user info */}
+      {isNewUser && (
+        <div className="flex items-center bg-blue-100 border border-blue-300 rounded-full px-4 py-2 mx-4 mt-4 text-center shadow-sm">
+          <PartyPopper className="mr-2 text-blue-500" size={40} />
+          <p className="text-body text-blue-700 font-medium">
+            Welcome! After verification, we'll help you set up your profile.
+          </p>
+        </div>
+      )}
       {/* Content */}
-      <div className="flex-1 flex items-center justify-center px-6 py-12">
+      <div className="flex-1 flex items-center justify-center px-6 py-5">
         <div className="w-full max-w-sm">
           {/* Header */}
           <div className="text-center mb-10">
@@ -227,16 +236,6 @@ export default function Verify() {
                 {countdown > 0 ? `Resend code in ${countdown}s` : "Resend code"}
               </Button>
             </div>
-
-            {/* New user info */}
-            {isNewUser && (
-              <div className="bg-white border border-yenko-separator rounded-2xl p-4 text-center">
-                <p className="text-subheadline text-yenko-secondary">
-                  👋 Welcome! After verification, we'll help you set up your
-                  profile.
-                </p>
-              </div>
-            )}
           </div>
         </div>
       </div>
