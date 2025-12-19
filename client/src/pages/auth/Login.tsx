@@ -72,9 +72,9 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-yenko-bgSecondary flex flex-col">
+    <div className="max-h-screen bg-yenko-bgSecondary flex flex-col">
       {/* Navigation */}
-      <nav className="p-4">
+      <nav className="p-4 border-b-4 border-yenko-separator">
         <Link
           to="/"
           className="inline-flex items-center text-yenko-blue hover:text-yenko-blue/80 transition-apple text-body font-medium"
@@ -85,16 +85,15 @@ export default function Login() {
       </nav>
 
       {/* Content */}
-      <div className="flex-1 flex items-center justify-center px-6 pb-12">
+      <div className="flex-1 flex items-center justify-center px-4">
         <div className="w-full max-w-sm">
           {/* Header */}
-          <div className="text-center mb-10">
-            <div className="text-5xl mb-4">🚗</div>
-            <h1 className="text-title-md text-yenko-label mb-2">
-              Welcome to Yenko
-            </h1>
-            <p className="text-body text-yenko-muted">
-              Enter your phone number to continue
+          <div className="text-center">
+            <div className="text-5xl mb-4">
+              <img src="/skipqueue.png" alt="Yenko Logo" />
+            </div>
+            <p className="text-md text-yenko-blue font-semibold">
+              Just enter your phone number and lets get started!
             </p>
           </div>
 
@@ -125,7 +124,7 @@ export default function Login() {
             <Button
               type="submit"
               disabled={loading || phone.length < 13}
-              className="w-full h-14 bg-yenko-blue hover:bg-yenko-blue/90 text-white text-body font-semibold rounded-xl shadow-apple transition-apple disabled:opacity-40"
+              className="w-full h-14 bg-yenko-blue hover:bg-yenko-blue/90 text-lg text-white font-semibold rounded-xl shadow-apple transition-apple disabled:opacity-40"
             >
               {loading ? (
                 <>
