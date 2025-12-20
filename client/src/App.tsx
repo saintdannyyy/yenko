@@ -3,6 +3,7 @@ import { Toaster } from "sonner";
 import { useAuthStore } from "@/store/authStore";
 import { useEffect, useState } from "react";
 import { authApi } from "@/lib/api";
+import { supabase } from "@/lib/supabase";
 
 // Pages - will import from pages folder
 import Landing from "@/pages/Landing";
@@ -10,11 +11,14 @@ import Login from "./pages/auth/Login";
 import Verify from "./pages/auth/Verify";
 import Profile from "@/pages/Profile";
 import ProfileSetup from "@/pages/onboard/ProfileSetup";
+import IdentityVerification from "@/pages/onboard/IdentityVerification";
 import VehicleSetup from "@/pages/onboard/VehicleSetup";
 import PassengerHome from "@/pages/passenger/Home";
 import PassengerDrivers from "@/pages/passenger/Drivers";
 import PassengerDriverDetail from "@/pages/passenger/DriverDetail";
 import PassengerTripStatus from "@/pages/passenger/TripStatus";
+import PassengerTrips from "@/pages/passenger/Trips";
+import Settings from "@/pages/Settings";
 import DriverRegister from "@/pages/driver/Register";
 import DriverDirection from "@/pages/driver/Direction";
 import DriverRequests from "@/pages/driver/Requests";
@@ -25,44 +29,76 @@ import NotFound from "@/pages/NotFound";
 
 // Auth initializer component - restores session on app load
 function AuthInitializer({ children }: { children: React.ReactNode }) {
-  const token = useAuthStore((s) => s.token);
   const setAuth = useAuthStore((s) => s.setAuth);
   const logout = useAuthStore((s) => s.logout);
   const setLoading = useAuthStore((s) => s.setLoading);
+  const setSupabaseSession = useAuthStore((s) => s.setSupabaseSession);
   const [initialized, setInitialized] = useState(false);
 
   useEffect(() => {
+    let subscription: { unsubscribe: () => void } | null = null;
+
     const initAuth = async () => {
-      // Get fresh token from store
+      // Get persisted token from localStorage (zustand persist)
       const currentToken = useAuthStore.getState().token;
+      const currentUser = useAuthStore.getState().user;
 
-      if (!currentToken) {
-        setInitialized(true);
-        return;
-      }
-
+      // Initialize Supabase session
       try {
-        setLoading(true);
-        const response = await authApi.me();
-        setAuth({
-          token: response.token,
-          user: response.user,
-          driver: response.driver,
-          onboardingStatus: response.onboardingStatus,
+        const {
+          data: { session },
+        } = await supabase.auth.getSession();
+        setSupabaseSession(session);
+
+        // Listen for Supabase auth changes
+        const { data } = supabase.auth.onAuthStateChange((_event, session) => {
+          setSupabaseSession(session);
         });
-      } catch (error) {
-        // Only logout if we're not on an auth page (user might be mid-flow)
-        const isAuthPage = window.location.pathname.startsWith("/auth/");
-        if (!isAuthPage) {
-          logout();
-        }
-      } finally {
-        setLoading(false);
-        setInitialized(true);
+        subscription = data.subscription;
+      } catch (e) {
+        console.warn("Supabase session init failed:", e);
       }
+
+      // If we have a persisted token, validate it with the backend
+      if (currentToken && currentUser) {
+        try {
+          setLoading(true);
+          const response = await authApi.me();
+          // Update with fresh data from server
+          setAuth({
+            token: response.token,
+            user: response.user,
+            driver: response.driver,
+            onboardingStatus: response.onboardingStatus,
+          });
+        } catch (error: any) {
+          console.warn("Session validation failed:", error.message);
+          // Only logout if explicitly a token error (401), not network errors
+          // This ensures refresh doesn't log users out on temporary issues
+          if (error.status === 401 || error.code === "TOKEN_EXPIRED") {
+            const isAuthPage = window.location.pathname.startsWith("/auth/");
+            if (!isAuthPage) {
+              await logout();
+            }
+          }
+          // For other errors (network, server errors), keep the session
+          // The user can retry or the app will work when connection restores
+        } finally {
+          setLoading(false);
+        }
+      }
+
+      setInitialized(true);
     };
 
     initAuth();
+
+    // Cleanup subscription on unmount
+    return () => {
+      if (subscription) {
+        subscription.unsubscribe();
+      }
+    };
   }, []); // Only run once on mount
 
   if (!initialized) {
@@ -179,6 +215,14 @@ function App() {
           }
         />
         <Route
+          path="/onboard/identity"
+          element={
+            <ProtectedRoute>
+              <IdentityVerification />
+            </ProtectedRoute>
+          }
+        />
+        <Route
           path="/onboard/vehicle"
           element={
             <ProtectedRoute allowedRoles={["driver"]}>
@@ -197,6 +241,16 @@ function App() {
           }
         />
 
+        {/* Settings Route */}
+        <Route
+          path="/settings"
+          element={
+            <ProtectedRoute>
+              <Settings />
+            </ProtectedRoute>
+          }
+        />
+
         {/* Passenger Routes */}
         <Route
           path="/passenger/home"
@@ -211,6 +265,14 @@ function App() {
           element={
             <ProtectedRoute allowedRoles={["passenger"]}>
               <PassengerDrivers />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/passenger/trips"
+          element={
+            <ProtectedRoute allowedRoles={["passenger"]}>
+              <PassengerTrips />
             </ProtectedRoute>
           }
         />
