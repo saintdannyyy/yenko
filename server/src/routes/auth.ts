@@ -169,6 +169,10 @@ authRouter.post('/verify-otp', async (req: Request, res: Response) => {
       { expiresIn: JWT_EXPIRES_IN }
     )
 
+    // Note: Supabase session is managed separately via the client
+    // The user is already created in Supabase auth, and the client
+    // can use supabase.auth.signInWithOtp() for direct Supabase auth if needed
+
     // Determine onboarding status
     let driver = null
     if (profile?.role === 'driver') {
