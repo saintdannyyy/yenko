@@ -21,10 +21,63 @@ export class ApiError extends Error {
   }
 }
 
-// Core fetch wrapper
+// Token refresh lock to prevent multiple simultaneous refreshes
+let isRefreshing = false
+let refreshPromise: Promise<string | null> | null = null
+
+async function refreshToken(): Promise<string | null> {
+  // If already refreshing, wait for that to complete
+  if (isRefreshing && refreshPromise) {
+    return refreshPromise
+  }
+
+  isRefreshing = true
+  refreshPromise = (async () => {
+    try {
+      const currentToken = useAuthStore.getState().token
+      if (!currentToken) return null
+
+      const response = await fetch(`${API_BASE}/auth/refresh`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${currentToken}`,
+        },
+      })
+
+      if (response.ok) {
+        const data = await response.json()
+        if (data.token) {
+          // Update the store with new token
+          const state = useAuthStore.getState()
+          if (state.user && state.onboardingStatus) {
+            useAuthStore.getState().setAuth({
+              token: data.token,
+              user: state.user,
+              driver: state.driver,
+              onboardingStatus: state.onboardingStatus,
+            })
+          }
+          return data.token
+        }
+      }
+      return null
+    } catch {
+      return null
+    } finally {
+      isRefreshing = false
+      refreshPromise = null
+    }
+  })()
+
+  return refreshPromise
+}
+
+// Core fetch wrapper with auto-retry on token expiry
 async function request<T>(
   endpoint: string,
-  options: RequestInit = {}
+  options: RequestInit = {},
+  retryCount = 0
 ): Promise<T> {
   const token = useAuthStore.getState().token
 
@@ -39,17 +92,28 @@ async function request<T>(
     headers,
   })
 
+  // Handle 401 - try to refresh token once
+  // Exclude only auth endpoints that don't need refresh (login, verify, request-otp)
+  const isAuthEndpoint = endpoint.includes('/auth/login') || 
+                         endpoint.includes('/auth/verify') || 
+                         endpoint.includes('/auth/request-otp') ||
+                         endpoint.includes('/auth/refresh')
+  
+  if (response.status === 401 && retryCount === 0 && !isAuthEndpoint) {
+    const newToken = await refreshToken()
+    if (newToken) {
+      // Retry the request with new token
+      return request<T>(endpoint, options, retryCount + 1)
+    }
+    
+    // Refresh failed - don't immediately logout, let the caller handle it
+    // This prevents aggressive logouts on temporary network issues
+    throw new ApiError('Session expired', 401, 'TOKEN_EXPIRED')
+  }
+
   const data = await response.json()
 
   if (!response.ok) {
-    // Handle token expiry - but don't redirect if already on auth pages
-    if (data.code === 'TOKEN_EXPIRED' || response.status === 401) {
-      const isAuthPage = window.location.pathname.startsWith('/auth/')
-      if (!isAuthPage) {
-        useAuthStore.getState().logout()
-        window.location.href = '/auth/login'
-      }
-    }
     throw new ApiError(data.message || 'Request failed', response.status, data.code)
   }
 
@@ -96,6 +160,11 @@ export interface VerifyOtpResponse {
   success: boolean
   message: string
   token: string
+  supabaseSession?: {
+    access_token: string
+    refresh_token: string
+    expires_at?: number
+  }
   user: {
     id: string
     phone: string
