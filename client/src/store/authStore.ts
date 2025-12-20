@@ -1,5 +1,7 @@
 import { create } from 'zustand'
 import { persist, createJSONStorage } from 'zustand/middleware'
+import { supabase } from '@/lib/supabase'
+import type { Session } from '@supabase/supabase-js'
 
 // Types
 export interface User {
@@ -39,6 +41,7 @@ interface AuthState {
   driver: Driver | null
   onboardingStatus: OnboardingStatus | null
   isLoading: boolean
+  supabaseSession: Session | null
 
   // Computed (derived from state)
   isAuthenticated: boolean
@@ -54,11 +57,13 @@ interface AuthState {
     driver?: Driver | null
     onboardingStatus: OnboardingStatus
   }) => void
+  setSupabaseSession: (session: Session | null) => void
   updateUser: (user: Partial<User>) => void
   updateDriver: (driver: Partial<Driver>) => void
   setOnboardingStatus: (status: OnboardingStatus) => void
   setLoading: (loading: boolean) => void
-  logout: () => void
+  logout: () => Promise<void>
+  initializeAuth: () => Promise<void>
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -70,6 +75,7 @@ export const useAuthStore = create<AuthState>()(
       driver: null,
       onboardingStatus: null,
       isLoading: false,
+      supabaseSession: null,
 
       // Computed getters
       get isAuthenticated() {
@@ -99,6 +105,25 @@ export const useAuthStore = create<AuthState>()(
         })
       },
 
+      setSupabaseSession: (session) => {
+        set({ supabaseSession: session })
+      },
+
+      initializeAuth: async () => {
+        set({ isLoading: true })
+        try {
+          const { data: { session } } = await supabase.auth.getSession()
+          set({ supabaseSession: session })
+          
+          // Listen for auth changes
+          supabase.auth.onAuthStateChange((_event, session) => {
+            set({ supabaseSession: session })
+          })
+        } finally {
+          set({ isLoading: false })
+        }
+      },
+
       updateUser: (userData) => {
         const current = get().user
         if (current) {
@@ -123,13 +148,17 @@ export const useAuthStore = create<AuthState>()(
         set({ isLoading: loading })
       },
 
-      logout: () => {
+      logout: async () => {
+        // Sign out from Supabase
+        await supabase.auth.signOut()
+        
         set({
           token: null,
           user: null,
           driver: null,
           onboardingStatus: null,
           isLoading: false,
+          supabaseSession: null,
         })
       },
     }),
