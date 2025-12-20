@@ -49,8 +49,8 @@ export default function ProfileSetup() {
 
         toast.success("Profile created!");
 
-        // Navigate to next step based on onboarding status
-        navigate(response.onboardingStatus.redirectTo, { replace: true });
+        // Navigate to identity verification
+        navigate("/onboard/identity", { replace: true });
       }
     } catch (error: any) {
       toast.error(error.message || "Failed to save profile");
@@ -65,7 +65,7 @@ export default function ProfileSetup() {
       <div className="flex-1 flex items-center justify-center p-6">
         <div className="w-full max-w-sm">
           {/* Header */}
-          <div className="text-center mb-10">
+          <div className="text-center mb-5">
             <div className="mb-2 items-center justify-center flex">
               <UserCircle2 size={80} color="#0057FF" />
             </div>
@@ -132,14 +132,16 @@ export default function ProfileSetup() {
                   >
                     <Users
                       className={cn(
-                        "w-6 h-6",
+                        "w-10 h-10",
                         role === "passenger"
                           ? "text-white"
                           : "text-yenko-muted",
                       )}
                     />
                   </div>
-                  <h3 className="text-headline text-yenko-label">Passenger</h3>
+                  <h3 className="text-headline text-md text-yenko-label">
+                    Passenger
+                  </h3>
                   <p className="text-footnote text-yenko-muted mt-1">
                     Find rides going my way
                   </p>
@@ -171,12 +173,14 @@ export default function ProfileSetup() {
                   >
                     <Car
                       className={cn(
-                        "w-6 h-6",
+                        "w-10 h-10",
                         role === "driver" ? "text-white" : "text-yenko-muted",
                       )}
                     />
                   </div>
-                  <h3 className="text-headline text-yenko-label">Driver</h3>
+                  <h3 className="text-headline text-md text-yenko-label">
+                    Driver
+                  </h3>
                   <p className="text-footnote text-yenko-muted mt-1">
                     Share my ride & earn
                   </p>
